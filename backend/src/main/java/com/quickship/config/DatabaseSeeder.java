@@ -40,6 +40,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Value("${quickship.admin.password}")
     private String adminPassword;
 
+    @Value("${quickship.admin.password-hash}")
+    private String adminPasswordHash;
+
     @Value("${quickship.admin.first-name}")
     private String adminFirstName;
 
@@ -99,7 +102,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         // 1. Seed Users
         User admin = User.builder()
                 .email(adminEmail)
-                .password(passwordEncoder.encode(adminPassword))
+                .password(resolveAdminPassword())
                 .firstName(adminFirstName)
                 .lastName(adminLastName)
                 .phone(adminPhone)
@@ -244,7 +247,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 });
 
         admin.setEmail(adminEmail);
-        admin.setPassword(passwordEncoder.encode(adminPassword));
+        admin.setPassword(resolveAdminPassword());
         admin.setFirstName(adminFirstName);
         admin.setLastName(adminLastName);
         admin.setPhone(adminPhone);
@@ -261,6 +264,16 @@ public class DatabaseSeeder implements CommandLineRunner {
             }
             userRepository.save(user);
         }
+    }
+
+    private String resolveAdminPassword() {
+        if (adminPasswordHash != null && !adminPasswordHash.isBlank()) {
+            return adminPasswordHash;
+        }
+        if (adminPassword == null || adminPassword.isBlank()) {
+            throw new IllegalStateException("APP_ADMIN_PASSWORD or APP_ADMIN_PASSWORD_HASH must be configured");
+        }
+        return passwordEncoder.encode(adminPassword);
     }
 
     private void backfillLegacyParcels() {

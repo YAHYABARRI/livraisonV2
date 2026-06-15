@@ -5,14 +5,14 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: quickship
-      MYSQL_USER: quickship
-      MYSQL_PASSWORD: quickship
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-quickship}
+      MYSQL_USER: ${MYSQL_USER:-quickship}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uquickship", "-pquickship"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u$${MYSQL_USER} -p$${MYSQL_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,13 +26,15 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/quickship?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: quickship
-      SPRING_DATASOURCE_PASSWORD: quickship
-      APP_ADMIN_EMAIL: admin@afrideex.ma
-      APP_ADMIN_PASSWORD: Afrideex@2026
-      APP_ADMIN_FIRST_NAME: AFRIDEEX
-      APP_ADMIN_LAST_NAME: Admin
-      APP_ADMIN_PHONE: "0600000000"
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-quickship}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:?Set APP_ADMIN_EMAIL in .env}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD:-}
+      APP_ADMIN_PASSWORD_HASH: ${APP_ADMIN_PASSWORD_HASH:-}
+      APP_ADMIN_FIRST_NAME: ${APP_ADMIN_FIRST_NAME:-AFRIDEEX}
+      APP_ADMIN_LAST_NAME: ${APP_ADMIN_LAST_NAME:-Admin}
+      APP_ADMIN_PHONE: ${APP_ADMIN_PHONE:-0600000000}
     depends_on:
       db:
         condition: service_healthy
