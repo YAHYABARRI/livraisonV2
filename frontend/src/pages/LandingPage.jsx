@@ -258,15 +258,17 @@ const LandingPage = () => {
               <a href="#pricing" className="btn-premium-secondary border-white/20 bg-white/10 text-white hover:bg-white hover:text-slate-950">
                 Voir les tarifs
               </a>
-              <a
-                href={`https://wa.me/${BRAND.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-premium-secondary border-white/20 bg-white/10 text-white hover:bg-[#25D366] hover:text-white"
-              >
-                <MessageCircle size={16} />
-                WhatsApp
-              </a>
+              {BRAND.whatsapp && (
+                <a
+                  href={`https://wa.me/${BRAND.whatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-premium-secondary border-white/20 bg-white/10 text-white hover:bg-[#25D366] hover:text-white"
+                >
+                  <MessageCircle size={16} />
+                  WhatsApp
+                </a>
+              )}
             </motion.div>
 
             <div className="mt-9 grid max-w-2xl grid-cols-3 gap-2">
