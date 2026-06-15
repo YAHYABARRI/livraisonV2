@@ -4,8 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { AlertCircle, Eye, EyeOff, Loader2, Lock, Mail, Phone, User } from 'lucide-react';
 import AuthFrame from '../../components/Common/AuthFrame';
+import { BRAND } from '../../constants/brand';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { usePageMeta } from '../../hooks/usePageMeta';
+import { getApiErrorMessage } from '../../utils/apiError';
 import { registerSchema } from '../../utils/validators';
 
 const FieldError = ({ error }) => (
@@ -22,6 +25,12 @@ const normalizeRegisterPayload = (data) => ({
 });
 
 const Register = () => {
+  usePageMeta({
+    title: `Créer un compte - ${BRAND.name}`,
+    description: 'Créez un compte client, livreur ou admin pour accéder à la console de livraison AFRIDEEX.',
+    path: '/register',
+  });
+
   const { register: signup } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
@@ -45,12 +54,10 @@ const Register = () => {
       setTimeout(() => navigate('/login'), 1600);
     } catch (err) {
       console.error(err);
-      const errMsg =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        (err.code === 'ERR_NETWORK'
-          ? `API inaccessible depuis ${window.location.origin}. Utilisez http://localhost:5173 ou redémarrez le backend après la mise à jour CORS.`
-          : "Impossible de créer le compte. Vérifiez que l'API backend est démarrée sur localhost:8080.");
+      const errMsg = getApiErrorMessage(
+        err,
+        "Impossible de créer le compte. Vérifiez que l'API backend est démarrée."
+      );
       setError(errMsg);
       toast.error(errMsg);
     }
@@ -85,6 +92,7 @@ const Register = () => {
             </div>
             <FieldError error={errors.firstName} />
           </div>
+
           <div className="space-y-1.5">
             <label htmlFor="lastName" className="text-sm font-extrabold text-slate-700 dark:text-slate-300">Nom</label>
             <div className="relative">
@@ -117,12 +125,18 @@ const Register = () => {
                 className={`input-premium pl-10 pr-10 ${errors.password ? 'border-red-400' : ''}`}
                 {...register('password')}
               />
-              <button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-3.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+              <button
+                type="button"
+                onClick={() => setShowPassword((value) => !value)}
+                className="absolute right-3 top-3.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+              >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             <FieldError error={errors.password} />
           </div>
+
           <div className="space-y-1.5">
             <label htmlFor="phone" className="text-sm font-extrabold text-slate-700 dark:text-slate-300">Téléphone</label>
             <div className="relative">

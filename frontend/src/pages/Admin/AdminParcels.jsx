@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -20,8 +20,10 @@ import Layout from '../../components/Common/Layout';
 import EmptyState from '../../components/Common/EmptyState';
 import { SkeletonTable } from '../../components/Common/Skeleton';
 import TicketPdfPreview from '../../components/Common/TicketPdfPreview';
+import { BRAND } from '../../constants/brand';
 import { adminService, ticketService } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { usePageMeta } from '../../hooks/usePageMeta';
 import {
   PageHeader,
   ProgressRoute,
@@ -52,6 +54,12 @@ const extractCity = (address) => {
 const parcelCity = (parcel) => parcel.deliveryCity || extractCity(parcel.deliveryAddress);
 
 const AdminParcels = () => {
+  usePageMeta({
+    title: `Gestion colis - ${BRAND.name}`,
+    description: 'Interface admin AFRIDEEX pour gérer colis, filtres, livreurs et tickets de livraison.',
+    path: '/admin/parcels',
+  });
+
   const toast = useToast();
   const [parcels, setParcels] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -76,10 +84,6 @@ const AdminParcels = () => {
   const pageSize = 7;
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
     setCurrentPage(0);
   }, [searchTerm, statusFilter, dateFilter, cityFilter, clientFilter]);
 
@@ -89,7 +93,7 @@ const AdminParcels = () => {
     }
   }, [ticketPreviewUrl]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -108,7 +112,11 @@ const AdminParcels = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const openAssignModal = (parcel) => {
     setAssigningParcel(parcel);
@@ -141,7 +149,7 @@ const AdminParcels = () => {
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(parcels, null, 2))}`;
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', 'global_colis_quickship.json');
+      downloadAnchor.setAttribute('download', 'global_colis_afrideex.json');
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();

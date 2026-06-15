@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   AlertCircle,
   ArrowLeft,
   Calendar,
+  Loader2,
   MapPin,
   Package,
   Phone,
@@ -12,8 +13,11 @@ import {
   User,
 } from 'lucide-react';
 import Navbar from '../components/Common/Navbar';
-import { parcelService } from '../services/api';
+import { BRAND } from '../constants/brand';
 import { useToast } from '../context/ToastContext';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { parcelService } from '../services/api';
+import { getApiErrorMessage } from '../utils/apiError';
 import {
   formatDate,
   PageHeader,
@@ -37,21 +41,18 @@ const TrackParcel = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
+  usePageMeta({
+    title: `Suivi colis - ${BRAND.name}`,
+    description: 'Suivez un colis AFRIDEEX en temps réel avec statut, trajet, destinataire et timeline logistique.',
+    path: trackingNumber ? `/track/${trackingNumber}` : '/track',
+  });
+
   const [searchVal, setSearchVal] = useState(trackingNumber || '');
   const [parcel, setParcel] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (trackingNumber) {
-      handleTrack(trackingNumber);
-    } else {
-      setParcel(null);
-      setError(null);
-    }
-  }, [trackingNumber]);
-
-  const handleTrack = async (num) => {
+  const handleTrack = useCallback(async (num) => {
     if (!num || num.trim() === '') {
       toast.warning('Veuillez saisir un numéro de suivi valide.');
       return;
@@ -66,12 +67,22 @@ const TrackParcel = () => {
       setParcel(data);
     } catch (err) {
       console.error(err);
-      setError('Numéro de suivi introuvable. Veuillez vérifier votre saisie.');
+      setError(getApiErrorMessage(err, 'Numéro de suivi introuvable. Veuillez vérifier votre saisie.'));
       toast.error('Colis introuvable.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    if (trackingNumber) {
+      setSearchVal(trackingNumber);
+      handleTrack(trackingNumber);
+    } else {
+      setParcel(null);
+      setError(null);
+    }
+  }, [handleTrack, trackingNumber]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -107,23 +118,25 @@ const TrackParcel = () => {
                   className="input-premium pl-10 text-base"
                   value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
+                  aria-label="Numéro de suivi du colis"
                 />
               </div>
               <button type="submit" disabled={loading} className="btn-premium-primary sm:w-auto">
+                {loading ? <Loader2 size={17} className="animate-spin" /> : <Search size={17} />}
                 {loading ? 'Recherche...' : 'Rechercher'}
               </button>
             </form>
           </div>
 
           {loading && (
-            <div className="flex flex-col items-center justify-center gap-4 p-14">
+            <div className="flex flex-col items-center justify-center gap-4 p-14" aria-live="polite">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
               <p className="text-sm font-bold text-slate-400">Récupération des événements de transport...</p>
             </div>
           )}
 
           {error && !loading && (
-            <div className="m-5 flex items-start gap-3 rounded-premium border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
+            <div className="m-5 flex items-start gap-3 rounded-premium border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300" role="alert">
               <AlertCircle size={22} className="mt-0.5 shrink-0" />
               <div>
                 <h4 className="text-sm font-extrabold">Recherche impossible</h4>
@@ -159,6 +172,7 @@ const TrackParcel = () => {
                 <h3 className="text-lg font-extrabold text-slate-950 dark:text-white">Fiche logistique</h3>
                 <div className="mt-5 grid gap-3">
                   <DetailItem icon={MapPin} label="Adresse de collecte" value={parcel.pickupAddress} />
+                  <DetailItem icon={MapPin} label="Ville de livraison" value={parcel.deliveryCity} />
                   <DetailItem icon={MapPin} label="Adresse de livraison" value={parcel.deliveryAddress} />
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <DetailItem icon={Scale} label="Poids" value={`${parcel.weight} kg`} />

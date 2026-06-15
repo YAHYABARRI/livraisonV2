@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Calendar,
   CheckCircle2,
@@ -17,11 +17,19 @@ import {
   XCircle,
 } from 'lucide-react';
 import Layout from '../../components/Common/Layout';
+import { BRAND } from '../../constants/brand';
 import { adminService, reportService } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { usePageMeta } from '../../hooks/usePageMeta';
 import { formatCurrency, PageHeader, SectionHeader, StatCard } from '../../components/Common/LogisticsUI';
 
 const AdminReports = () => {
+  usePageMeta({
+    title: `Rapports admin - ${BRAND.name}`,
+    description: 'Générez les rapports PDF AFRIDEEX par date, livreur, client et période.',
+    path: '/admin/reports',
+  });
+
   const toast = useToast();
   const [stats, setStats] = useState(null);
   const [drivers, setDrivers] = useState([]);
@@ -38,12 +46,7 @@ const AdminReports = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [previewType, setPreviewType] = useState('custom');
 
-  useEffect(() => {
-    fetchStats();
-    fetchMetadata();
-  }, []);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setLoadingStats(true);
     try {
       const statsData = await reportService.getStats();
@@ -54,9 +57,9 @@ const AdminReports = () => {
     } finally {
       setLoadingStats(false);
     }
-  };
+  }, [toast]);
 
-  const fetchMetadata = async () => {
+  const fetchMetadata = useCallback(async () => {
     setLoadingMetadata(true);
     try {
       const [driversData, usersData] = await Promise.all([
@@ -71,7 +74,12 @@ const AdminReports = () => {
     } finally {
       setLoadingMetadata(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchStats();
+    fetchMetadata();
+  }, [fetchMetadata, fetchStats]);
 
   const filteredClients = clients.filter((client) => {
     const term = clientSearch.toLowerCase();

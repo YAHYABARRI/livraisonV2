@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   CheckCircle2,
   ChevronLeft,
@@ -16,8 +16,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Layout from '../../components/Common/Layout';
 import EmptyState from '../../components/Common/EmptyState';
 import { SkeletonTable } from '../../components/Common/Skeleton';
+import { BRAND } from '../../constants/brand';
 import { driverService } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { usePageMeta } from '../../hooks/usePageMeta';
 import { PageHeader, SectionHeader, StatusBadge } from '../../components/Common/LogisticsUI';
 
 const statusOptions = [
@@ -52,6 +54,12 @@ const ClientPhoneLink = ({ parcel, className = 'mt-1 text-xs' }) => {
 };
 
 const DriverParcels = () => {
+  usePageMeta({
+    title: `Courses livreur - ${BRAND.name}`,
+    description: 'Espace livreur AFRIDEEX pour consulter les colis assignés et mettre à jour les statuts.',
+    path: '/driver/parcels',
+  });
+
   const toast = useToast();
   const [parcels, setParcels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,14 +74,10 @@ const DriverParcels = () => {
   const pageSize = 7;
 
   useEffect(() => {
-    fetchParcels();
-  }, []);
-
-  useEffect(() => {
     setCurrentPage(0);
   }, [searchTerm, statusFilter]);
 
-  const fetchParcels = async () => {
+  const fetchParcels = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -86,7 +90,11 @@ const DriverParcels = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchParcels();
+  }, [fetchParcels]);
 
   const openUpdateModal = (parcel) => {
     setUpdatingParcel(parcel);
@@ -120,7 +128,7 @@ const DriverParcels = () => {
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(parcels, null, 2))}`;
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', 'mes_courses_quickship.json');
+      downloadAnchor.setAttribute('download', 'mes_courses_afrideex.json');
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();

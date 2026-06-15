@@ -1,29 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowRight,
-  Award,
-  Building2,
+  BarChart3,
   Download,
   MapPin,
   MessageCircle,
   PackageCheck,
-  Play,
   Search,
   ShieldCheck,
+  Sparkles,
   Truck,
   Users,
+  Warehouse,
   X,
 } from 'lucide-react';
 import Navbar from '../components/Common/Navbar';
 import BrandLogo from '../components/Common/BrandLogo';
-import { parcelService } from '../services/api';
-import heroLogistics from '../assets/landing-hero-logistics.webp';
-import lastMilePhoto from '../assets/landing-last-mile.webp';
-import hubOperationsPhoto from '../assets/landing-hub-operations.webp';
-import moroccoDeliveryMap from '../assets/morocco-delivery-map.webp';
+import { BRAND } from '../constants/brand';
 import { foxDeliveryRates, foxRatesMeta } from '../data/foxDeliveryRates';
+import { usePageMeta } from '../hooks/usePageMeta';
+import heroLogistics from '../assets/landing-hero-logistics.webp';
+import hubOperationsPhoto from '../assets/landing-hub-operations.webp';
+import lastMilePhoto from '../assets/landing-last-mile.webp';
+import moroccoDeliveryMap from '../assets/morocco-delivery-map.webp';
+import { parcelService } from '../services/api';
+import { getApiErrorMessage } from '../utils/apiError';
 import {
   ProgressRoute,
   StatusBadge,
@@ -32,71 +35,121 @@ import {
 } from '../components/Common/LogisticsUI';
 
 const formatDirham = (value) => `${Number(value || 0).toFixed(2)} DH`;
+const RATES_PER_PAGE = 8;
 
-const MoroccoCoverageMap = () => {
-  return (
-    <div className="group relative overflow-hidden rounded-premium border border-slate-200 bg-white p-2 shadow-premium-xl transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_34px_95px_rgba(11,95,255,0.18)] dark:border-slate-800 dark:bg-slate-950 lg:self-start">
-      <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
-        <img
-          src={moroccoDeliveryMap}
-          alt="Carte de livraison au Maroc avec zones d'expédition et véhicule AFRIDEEX"
-          className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
-          loading="lazy"
-        />
-        <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-primary-200/50 dark:ring-white/10" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white/55 to-transparent dark:from-slate-950/25" />
-      </div>
-    </div>
-  );
-};
+const heroStats = [
+  ['405', 'zones couvertes'],
+  ['24-72h', 'délais moyens'],
+  ['COD', 'paiement livraison'],
+];
+
+const services = [
+  {
+    icon: PackageCheck,
+    title: 'Création colis rapide',
+    text: 'Saisie claire du destinataire, de la ville, de l’adresse et du poids avec validation immédiate.',
+  },
+  {
+    icon: Truck,
+    title: 'Suivi opérationnel',
+    text: 'Tracking public et privé connecté aux statuts réels renvoyés par le backend.',
+  },
+  {
+    icon: Warehouse,
+    title: 'Pilotage admin',
+    text: 'Assignation livreur, gestion colis, tickets imprimables et rapports PDF depuis une console dense.',
+  },
+  {
+    icon: Download,
+    title: 'Documents prêts terrain',
+    text: 'Tickets et rapports conçus pour l’impression et l’exploitation quotidienne.',
+  },
+];
+
+const workflow = [
+  ['01', 'Créer', 'Le client enregistre le colis et la destination.'],
+  ['02', 'Attribuer', 'L’admin affecte un livreur disponible.'],
+  ['03', 'Acheminer', 'Les statuts terrain alimentent le suivi en temps réel.'],
+  ['04', 'Livrer', 'La livraison clôture le colis et les documents restent disponibles.'],
+];
 
 const faqs = [
   {
     q: 'Quels sont vos délais de livraison ?',
-    a: 'Les livraisons sont généralement réalisées sous 24h à 72h selon la distance, le statut du colis et la ville de destination.',
+    a: 'Les livraisons sont généralement réalisées sous 24h à 72h selon la ville, la tournée et le statut opérationnel.',
   },
   {
     q: "Comment suivre l'acheminement de mon colis ?",
-    a: 'Saisissez simplement votre numéro de suivi AFRIDEEX. La route, le statut et les événements de transport sont affichés en temps réel.',
+    a: 'Saisissez le numéro de suivi AFRIDEEX dans le tracking public. Les informations viennent directement de l’API colis.',
   },
   {
-    q: 'Proposez-vous le paiement à la livraison ?',
-    a: "Oui. Les encaissements à la livraison peuvent être suivis dans le tableau de bord et consolidés dans les rapports d'activité.",
+    q: 'Le tableau des tarifs couvre quelles villes ?',
+    a: 'La grille affiche les villes et zones disponibles, avec frais de livraison et frais de retour quand ils existent.',
   },
 ];
 
-const imageStories = [
-  {
-    image: lastMilePhoto,
-    title: 'Livraison de proximité',
-    text: 'Des remises lisibles, rapides et suivies jusqu’au dernier kilomètre.',
-  },
-  {
-    image: hubOperationsPhoto,
-    title: 'Tri opérationnel',
-    text: 'Un hub organisé pour accélérer les flux et fiabiliser chaque colis.',
-  },
-];
+const MoroccoCoverageMap = () => (
+  <div className="group relative overflow-hidden rounded-premium border border-slate-200 bg-white p-2 shadow-premium-xl dark:border-slate-800 dark:bg-slate-950">
+    <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
+      <img
+        src={moroccoDeliveryMap}
+        alt="Carte de livraison AFRIDEEX au Maroc"
+        className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.025]"
+        loading="lazy"
+      />
+      <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-primary-200/50 dark:ring-white/10" />
+      <div className="absolute left-4 top-4 rounded-full border border-white/70 bg-white/88 px-3 py-1 text-xs font-black text-slate-850 shadow-sm backdrop-blur">
+        Couverture Maroc
+      </div>
+    </div>
+  </div>
+);
 
 const LandingPage = () => {
+  usePageMeta({
+    title: `${BRAND.name} - Livraison e-commerce au Maroc`,
+    description: 'Livraison e-commerce au Maroc avec suivi colis réel, tarifs par ville, tickets imprimables et tableaux de bord.',
+    path: '/',
+  });
+
   const [trackingNumber, setTrackingNumber] = useState('');
   const [trackedParcel, setTrackedParcel] = useState(null);
   const [trackingError, setTrackingError] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
-  const [videoOpen, setVideoOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
   const [rateSearch, setRateSearch] = useState('');
   const [selectedCity, setSelectedCity] = useState('ALL');
+  const [ratePage, setRatePage] = useState(1);
 
-  const filteredRates = foxDeliveryRates.filter((rate) => {
-    const term = rateSearch.toLowerCase();
-    const matchesSearch = rate.city.toLowerCase().includes(term);
-    const matchesCity = selectedCity === 'ALL' || rate.city === selectedCity;
-    return matchesSearch && matchesCity;
-  });
+  const filteredRates = useMemo(() => {
+    const term = rateSearch.trim().toLowerCase();
+    return foxDeliveryRates.filter((rate) => {
+      const matchesSearch = rate.city.toLowerCase().includes(term);
+      const matchesCity = selectedCity === 'ALL' || rate.city === selectedCity;
+      return matchesSearch && matchesCity;
+    });
+  }, [rateSearch, selectedCity]);
 
-  const handleTrackSubmit = async (e) => {
-    e.preventDefault();
+  const totalRatePages = Math.max(1, Math.ceil(filteredRates.length / RATES_PER_PAGE));
+  const currentRatePage = Math.min(ratePage, totalRatePages);
+  const rateStart = filteredRates.length === 0 ? 0 : (currentRatePage - 1) * RATES_PER_PAGE + 1;
+  const rateEnd = Math.min(currentRatePage * RATES_PER_PAGE, filteredRates.length);
+  const paginatedRates = useMemo(() => {
+    const start = (currentRatePage - 1) * RATES_PER_PAGE;
+    return filteredRates.slice(start, start + RATES_PER_PAGE);
+  }, [currentRatePage, filteredRates]);
+  const visibleRatePages = useMemo(() => {
+    const start = Math.max(1, currentRatePage - 1);
+    const end = Math.min(totalRatePages, start + 2);
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+  }, [currentRatePage, totalRatePages]);
+
+  useEffect(() => {
+    setRatePage(1);
+  }, [rateSearch, selectedCity]);
+
+  const handleTrackSubmit = async (event) => {
+    event.preventDefault();
     if (!trackingNumber.trim()) return;
 
     setTrackingLoading(true);
@@ -108,7 +161,7 @@ const LandingPage = () => {
       setTrackedParcel(data);
     } catch (err) {
       console.error(err);
-      setTrackingError('Aucun colis trouvé avec ce numéro de suivi. Veuillez vérifier le code.');
+      setTrackingError(getApiErrorMessage(err, 'Aucun colis trouvé avec ce numéro de suivi. Vérifiez le code.'));
     } finally {
       setTrackingLoading(false);
     }
@@ -119,49 +172,52 @@ const LandingPage = () => {
       <Navbar />
 
       <section
-        className="relative isolate min-h-[92vh] overflow-hidden bg-slate-950 px-4 py-10 text-white sm:px-6 lg:px-8"
+        className="relative isolate overflow-hidden bg-slate-950 px-4 pb-14 pt-10 text-white sm:px-6 lg:px-8 lg:pb-20"
         style={{
-          backgroundImage: `linear-gradient(90deg, rgba(7,17,31,0.96) 0%, rgba(7,17,31,0.82) 48%, rgba(7,17,31,0.46) 100%), url(${heroLogistics})`,
+          backgroundImage: `linear-gradient(90deg, rgba(5,13,28,0.96) 0%, rgba(5,13,28,0.84) 48%, rgba(5,13,28,0.46) 100%), url(${heroLogistics})`,
           backgroundPosition: 'center',
           backgroundSize: 'cover',
         }}
       >
-        <div className="mx-auto grid max-w-7xl gap-10 pt-10 lg:grid-cols-[1fr_29rem] lg:items-center">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-neutralBg to-transparent dark:from-darkBg" />
+
+        <div className="relative mx-auto grid max-w-7xl gap-8 pt-8 lg:grid-cols-[minmax(0,1fr)_31rem] lg:items-center">
           <div className="max-w-3xl">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-100 backdrop-blur"
+              className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/12 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-100 backdrop-blur"
             >
-              <ShieldCheck size={14} />
-              Plateforme logistique temps réel
+              <Sparkles size={14} />
+              Livraison e-commerce au Maroc
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-              className="max-w-3xl text-4xl font-black leading-[1.02] tracking-normal sm:text-6xl lg:text-7xl"
+              transition={{ delay: 0.04 }}
+              className="max-w-4xl text-4xl font-black leading-[1.02] tracking-normal sm:text-6xl lg:text-7xl"
             >
-              AFRIDEEX
+              Pilotez vos colis avec une plateforme logistique premium.
             </motion.h1>
+
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.09 }}
               className="mt-5 max-w-2xl text-lg font-medium leading-8 text-slate-200"
             >
-              Une console de livraison moderne pour créer, suivre, assigner et piloter vos colis avec la clarté d'une grande entreprise logistique.
+              AFRIDEEX centralise la création, le suivi, les tickets, les livreurs et les rapports pour les vendeurs e-commerce marocains.
             </motion.p>
 
             <motion.form
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.16 }}
+              transition={{ delay: 0.14 }}
               onSubmit={handleTrackSubmit}
-              className="mt-8 max-w-2xl"
+              className="mt-8 max-w-2xl rounded-premium border border-white/18 bg-white/12 p-2 shadow-2xl backdrop-blur-xl"
             >
-              <div className="flex flex-col gap-3 rounded-premium border border-white/15 bg-white/12 p-2 backdrop-blur-xl sm:flex-row">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <div className="flex flex-1 items-center gap-3 px-3">
                   <Search size={20} className="shrink-0 text-blue-200" />
                   <input
@@ -170,6 +226,7 @@ const LandingPage = () => {
                     className="h-12 w-full bg-transparent text-sm font-bold text-white placeholder:text-slate-300 focus:outline-none"
                     value={trackingNumber}
                     onChange={(e) => setTrackingNumber(e.target.value)}
+                    aria-label="Numéro de suivi"
                   />
                 </div>
                 <button
@@ -182,7 +239,7 @@ const LandingPage = () => {
                 </button>
               </div>
               {trackingError && (
-                <p className="mt-3 inline-flex rounded-premium border border-red-300/30 bg-red-950/40 px-3 py-2 text-xs font-bold text-red-100">
+                <p className="mt-3 rounded-premium border border-red-300/30 bg-red-950/50 px-3 py-2 text-xs font-bold text-red-100">
                   {trackingError}
                 </p>
               )}
@@ -191,18 +248,18 @@ const LandingPage = () => {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.22 }}
-              className="mt-8 flex flex-wrap items-center gap-3"
+              transition={{ delay: 0.2 }}
+              className="mt-7 flex flex-wrap items-center gap-3"
             >
               <Link to="/register" className="btn-premium-primary bg-primary-600">
                 Créer un compte
                 <ArrowRight size={16} />
               </Link>
-              <Link to="/track" className="btn-premium-secondary border-white/20 bg-white/10 text-white hover:bg-white hover:text-slate-950">
-                Tracking public
-              </Link>
+              <a href="#pricing" className="btn-premium-secondary border-white/20 bg-white/10 text-white hover:bg-white hover:text-slate-950">
+                Voir les tarifs
+              </a>
               <a
-                href="https://wa.me/212701212524"
+                href={`https://wa.me/${BRAND.whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-premium-secondary border-white/20 bg-white/10 text-white hover:bg-[#25D366] hover:text-white"
@@ -211,172 +268,165 @@ const LandingPage = () => {
                 WhatsApp
               </a>
             </motion.div>
+
+            <div className="mt-9 grid max-w-2xl grid-cols-3 gap-2">
+              {heroStats.map(([value, label]) => (
+                <div key={label} className="rounded-premium border border-white/14 bg-white/10 p-3 backdrop-blur">
+                  <p className="text-xl font-black text-white sm:text-2xl">{value}</p>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">{label}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <motion.div
+          <motion.aside
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.16 }}
-            className="surface border-white/20 bg-white/94 p-4 text-slate-950 shadow-premium-xl dark:bg-slate-950/92 dark:text-white"
+            transition={{ delay: 0.12 }}
+            className="rounded-premium border border-white/20 bg-white/94 p-4 text-slate-950 shadow-premium-xl backdrop-blur-xl dark:bg-slate-950/92 dark:text-white"
           >
             <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Live operations</p>
-                <h2 className="mt-1 text-xl font-black">Tour de contrôle</h2>
+                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Tour de contrôle</p>
+                <h2 className="mt-1 text-xl font-black">Opérations live</h2>
               </div>
               <StatusBadge status="IN_TRANSIT" />
             </div>
 
             <div className="mt-4">
-              <ProgressRoute status="IN_TRANSIT" fromLabel="Entrepôt" toLabel="Client" />
-            </div>
-
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {[
-                ['198k', 'Colis livrés'],
-                ['99%', 'À temps'],
-                ['405', 'Zones'],
-              ].map(([value, label]) => (
-                <div key={label} className="rounded-premium border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900">
-                  <p className="text-xl font-black">{value}</p>
-                  <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
-                </div>
-              ))}
+              <ProgressRoute status="IN_TRANSIT" fromLabel="Hub" toLabel="Client" />
             </div>
 
             <div className="mt-4 space-y-2">
               {[
-                ['QS-849201', 'Casablanca -> Rabat', 'OUT_FOR_DELIVERY'],
-                ['QS-532840', 'Marrakech -> Agadir', 'ARRIVED_AT_HUB'],
-                ['QS-118902', 'Tanger -> Fès', 'DELIVERED'],
-              ].map(([id, route, status]) => (
-                <div key={id} className="flex items-center justify-between gap-3 rounded-premium border border-slate-200 p-3 dark:border-slate-800">
+                ['Casablanca', 'Rabat', 'OUT_FOR_DELIVERY'],
+                ['Marrakech', 'Agadir', 'ARRIVED_AT_HUB'],
+                ['Tanger', 'Fès', 'DELIVERED'],
+              ].map(([from, to, status]) => (
+                <div key={`${from}-${to}`} className="flex items-center justify-between gap-3 rounded-premium border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
                   <div>
-                    <p className="text-sm font-black text-primary-700 dark:text-primary-300">{id}</p>
-                    <p className="text-xs font-medium text-slate-500">{route}</p>
+                    <p className="text-sm font-black text-slate-950 dark:text-white">{from} → {to}</p>
+                    <p className="mt-0.5 text-xs font-semibold text-slate-400">Réseau national</p>
                   </div>
                   <StatusBadge status={status} compact />
                 </div>
               ))}
             </div>
-          </motion.div>
+          </motion.aside>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-5 px-4 py-8 sm:px-6 lg:grid-cols-4 lg:px-8">
-        {[
-          { icon: PackageCheck, title: 'Tracking central', text: 'Un suivi lisible et actionnable dès le premier écran.' },
-          { icon: Truck, title: 'Assignation livreur', text: 'Pilotage des tournées et statuts terrain.' },
-          { icon: Building2, title: 'Hub & stockage', text: 'Vision claire des étapes logistiques.' },
-          { icon: Download, title: 'Rapports PDF', text: 'Exports opérationnels et financiers.' },
-        ].map((item) => {
-          const Icon = item.icon;
-          return (
-            <div key={item.title} className="surface p-5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-premium bg-primary-50 text-primary-700 dark:bg-primary-950/30 dark:text-primary-300">
-                <Icon size={21} />
-              </div>
-              <h3 className="mt-4 font-black text-slate-950 dark:text-white">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.text}</p>
-            </div>
-          );
-        })}
+      <section id="services" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid gap-4 lg:grid-cols-4">
+          {services.map((item) => {
+            const Icon = item.icon;
+            return (
+              <article key={item.title} className="surface surface-hover p-5">
+                <div className="flex h-11 w-11 items-center justify-center rounded-premium bg-primary-50 text-primary-700 dark:bg-primary-950/30 dark:text-primary-300">
+                  <Icon size={21} />
+                </div>
+                <h3 className="mt-4 font-black text-slate-950 dark:text-white">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.text}</p>
+              </article>
+            );
+          })}
+        </div>
       </section>
 
       <section className="bg-white py-20 dark:bg-slate-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">Sur le terrain</p>
+              <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">Expérience terrain</p>
               <h2 className="mt-3 max-w-3xl text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">
-                Une expérience visuelle qui montre vraiment la livraison.
+                Une interface qui parle aux vendeurs, aux admins et aux livreurs.
               </h2>
             </div>
             <p className="max-w-lg text-sm leading-7 text-slate-500 dark:text-slate-400">
-              La page met désormais en avant les deux moments clés du service : la remise client et le traitement en hub.
+              Les écrans priorisent les actions utiles : créer un colis, suivre un statut, imprimer un ticket et piloter les tournées.
             </p>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-2">
-            {imageStories.map((story) => (
-              <figure key={story.title} className="group overflow-hidden rounded-premium border border-slate-200 bg-slate-950 shadow-premium-lg dark:border-slate-800">
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img
-                    src={story.image}
-                    alt={story.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/86 via-slate-950/18 to-transparent" />
+          <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+            <figure className="group overflow-hidden rounded-premium border border-slate-200 bg-slate-950 shadow-premium-lg dark:border-slate-800">
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <img src={lastMilePhoto} alt="Livraison e-commerce dernier kilomètre" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/88 via-slate-950/22 to-transparent" />
+                <figcaption className="absolute inset-x-0 bottom-0 p-6 text-white">
+                  <h3 className="text-2xl font-black">Dernier kilomètre maîtrisé</h3>
+                  <p className="mt-2 max-w-lg text-sm font-medium leading-6 text-slate-200">Une expérience claire pour le client final et exploitable par les équipes terrain.</p>
+                </figcaption>
+              </div>
+            </figure>
+
+            <div className="grid gap-5">
+              <figure className="group overflow-hidden rounded-premium border border-slate-200 bg-slate-950 shadow-premium-lg dark:border-slate-800">
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <img src={hubOperationsPhoto} alt="Hub logistique AFRIDEEX" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/86 via-slate-950/16 to-transparent" />
                   <figcaption className="absolute inset-x-0 bottom-0 p-5 text-white">
-                    <h3 className="text-2xl font-black">{story.title}</h3>
-                    <p className="mt-2 max-w-md text-sm font-medium leading-6 text-slate-200">{story.text}</p>
+                    <h3 className="text-xl font-black">Hub et tri opérationnel</h3>
+                    <p className="mt-1 text-sm text-slate-200">Des flux lisibles, de la collecte à la livraison.</p>
                   </figcaption>
                 </div>
               </figure>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white py-20 dark:bg-slate-950">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-          <div>
-            <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">Workflow</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">Un parcours colis pensé comme une chaîne d'opérations.</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400">
-              Chaque écran a été conçu pour réduire les clics inutiles: création rapide, suivi clair, attribution immédiate et reporting prêt à partager.
-            </p>
-            <button onClick={() => setVideoOpen(true)} className="btn-premium-secondary mt-6" type="button">
-              <Play size={16} />
-              Voir la démonstration
-            </button>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {[
-              ['01', 'Créer', 'Saisir destinataire, poids et itinéraire.'],
-              ['02', 'Attribuer', 'Assigner un livreur selon la charge.'],
-              ['03', 'Acheminer', 'Suivre collecte, hub et transit.'],
-              ['04', 'Livrer', 'Clôturer avec statut et ticket.'],
-            ].map(([step, title, text]) => (
-              <div key={step} className="surface p-5">
-                <span className="text-xs font-black text-primary-700 dark:text-primary-300">{step}</span>
-                <h3 className="mt-3 text-xl font-black text-slate-950 dark:text-white">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{text}</p>
+              <div className="surface p-5">
+                <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">Workflow</p>
+                <div className="mt-4 grid gap-3">
+                  {workflow.map(([step, title, text]) => (
+                    <div key={step} className="flex gap-3 rounded-premium border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/40">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-premium bg-slate-950 text-xs font-black text-white dark:bg-white dark:text-slate-950">{step}</span>
+                      <div>
+                        <p className="font-black text-slate-950 dark:text-white">{title}</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">{text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
       <section id="pricing" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-8 grid gap-6 lg:grid-cols-[1fr_34rem] lg:items-end">
           <div>
-            <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">Tarifs</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">Simulateur de coûts.</h2>
+            <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">Tarifs Maroc</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">Tableau des tarifs par ville.</h2>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500 dark:text-slate-400">
-              Choisissez une destination et visualisez instantanément le tarif AFRIDEEX disponible au Maroc.
+              Le tableau reste central : recherchez une ville, filtrez une destination et consultez les frais de livraison et de retour.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:w-[34rem]">
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-3.5 text-slate-400" />
-              <input className="input-premium pl-10" placeholder="Rechercher une destination" value={rateSearch} onChange={(e) => setRateSearch(e.target.value)} />
+          <div className="surface p-3">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-3.5 text-slate-400" />
+                <input
+                  className="input-premium pl-10"
+                  placeholder="Rechercher une ville"
+                  value={rateSearch}
+                  onChange={(e) => setRateSearch(e.target.value)}
+                  aria-label="Rechercher une ville dans le tableau des tarifs"
+                />
+              </div>
+              <select className="input-premium" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} aria-label="Filtrer les tarifs par destination">
+                <option value="ALL">Toutes destinations</option>
+                {foxDeliveryRates.map((rate) => <option key={rate.city} value={rate.city}>{rate.city}</option>)}
+              </select>
             </div>
-            <select className="input-premium" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}>
-              <option value="ALL">Toutes destinations</option>
-              {foxDeliveryRates.map((rate) => <option key={rate.city} value={rate.city}>{rate.city}</option>)}
-            </select>
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.06fr)_minmax(23rem,0.94fr)] lg:items-stretch">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.06fr)_minmax(23rem,0.94fr)] lg:items-start">
           <div className="surface overflow-hidden">
             <div className="flex flex-col gap-3 border-b border-slate-100 bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Grille tarifaire</p>
                 <h3 className="mt-1 text-xl font-black text-slate-950 dark:text-white">Destinations disponibles</h3>
+                <p className="mt-1 text-xs font-semibold text-slate-400">
+                  Données publiques foxlivraison.ma, consolidées le {new Date(foxRatesMeta.scrapedAt).toLocaleDateString('fr-FR')}.
+                </p>
               </div>
               <span className="inline-flex w-fit items-center gap-2 rounded-full bg-secondary-50 px-3 py-1 text-xs font-black text-secondary-700 dark:bg-secondary-950/40 dark:text-secondary-300">
                 <MapPin size={13} />
@@ -384,11 +434,11 @@ const LandingPage = () => {
               </span>
             </div>
 
-            <div className="max-h-[42rem] overflow-auto">
-              <table className="w-full min-w-[38rem] border-separate border-spacing-0 text-left">
-                <thead>
+            <div className="max-h-[44rem] overflow-auto overscroll-contain">
+              <table className="w-full min-w-[39rem] border-separate border-spacing-0 text-left">
+                <thead className="sticky top-0 z-10">
                   <tr className="bg-slate-950 text-xs font-black uppercase tracking-wider text-white dark:bg-slate-950">
-                    <th className="px-5 py-4">Destination</th>
+                    <th className="px-5 py-4">Ville / zone</th>
                     <th className="px-5 py-4 text-right">Frais livraison</th>
                     <th className="px-5 py-4 text-right">Frais retour</th>
                   </tr>
@@ -399,7 +449,7 @@ const LandingPage = () => {
                       <td colSpan="3" className="p-8 text-center text-sm font-semibold text-slate-400">Aucun tarif ne correspond à vos critères.</td>
                     </tr>
                   ) : (
-                    filteredRates.map((rate) => (
+                    paginatedRates.map((rate) => (
                       <tr key={`${rate.city}-${rate.deliveryFee}-${rate.returnFee}`} className="group bg-white transition-colors duration-200 hover:bg-primary-50/50 dark:bg-slate-900 dark:hover:bg-slate-800/60">
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
@@ -426,6 +476,64 @@ const LandingPage = () => {
                 </tbody>
               </table>
             </div>
+
+            <div className="border-t border-slate-100 bg-slate-50/80 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/50">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="min-w-0">
+                  <p className="text-xs font-black uppercase tracking-wider text-slate-400">Navigation tarifs</p>
+                  <p className="mt-1 text-sm font-extrabold text-slate-800 dark:text-slate-100">
+                    {filteredRates.length === 0
+                      ? 'Aucune destination à afficher'
+                      : `${rateStart}-${rateEnd} sur ${filteredRates.length} destinations`}
+                  </p>
+                  <div className="mt-3 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-primary-600 via-sky-500 to-secondary-500 transition-all duration-500"
+                      style={{ width: `${filteredRates.length === 0 ? 0 : (currentRatePage / totalRatePages) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setRatePage((page) => Math.max(1, page - 1))}
+                    disabled={currentRatePage === 1 || filteredRates.length === 0}
+                    className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-700 transition-all hover:-translate-y-0.5 hover:border-primary-200 hover:text-primary-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                  >
+                    Précédent
+                  </button>
+
+                  <div className="flex items-center rounded-full border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    {visibleRatePages.map((page) => (
+                      <button
+                        key={page}
+                        type="button"
+                        onClick={() => setRatePage(page)}
+                        className={`h-9 min-w-9 rounded-full px-3 text-xs font-black transition-all ${
+                          page === currentRatePage
+                            ? 'bg-slate-950 text-white shadow-md dark:bg-white dark:text-slate-950'
+                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white'
+                        }`}
+                        aria-current={page === currentRatePage ? 'page' : undefined}
+                      >
+                        {String(page).padStart(2, '0')}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setRatePage((page) => Math.min(totalRatePages, page + 1))}
+                    disabled={currentRatePage === totalRatePages || filteredRates.length === 0}
+                    className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-xs font-black text-white transition-all hover:-translate-y-0.5 hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 dark:bg-white dark:text-slate-950 dark:hover:bg-primary-100"
+                  >
+                    Suivant
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <MoroccoCoverageMap />
@@ -433,23 +541,26 @@ const LandingPage = () => {
       </section>
 
       <section className="bg-slate-950 px-4 py-20 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.78fr_1.22fr]">
           <div>
-            <p className="text-xs font-black uppercase tracking-wider text-primary-300">Performance</p>
-            <h2 className="mt-3 text-3xl font-black sm:text-4xl">Une interface faite pour l'exploitation quotidienne.</h2>
+            <p className="text-xs font-black uppercase tracking-wider text-primary-300">Plateforme complète</p>
+            <h2 className="mt-3 text-3xl font-black sm:text-4xl">Une interface faite pour l’exploitation quotidienne.</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-300">
+              L’expérience reste connectée à vos APIs existantes : auth, dashboard, suivi, tickets et rapports.
+            </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {[
-              { icon: Truck, value: '198,521', label: 'Colis livrés' },
-              { icon: Users, value: '2,720', label: 'Clients actifs' },
-              { icon: MapPin, value: '405', label: 'Zones couvertes' },
-              { icon: Award, value: '99%', label: 'Livraisons à temps' },
+              { icon: Truck, value: 'Livraison', label: 'Tracking temps réel' },
+              { icon: Users, value: 'Clients', label: 'Espace vendeur sécurisé' },
+              { icon: BarChart3, value: 'Admin', label: 'Pilotage et rapports' },
+              { icon: ShieldCheck, value: 'Livreur', label: 'Statuts et téléphone client' },
             ].map((item) => {
               const Icon = item.icon;
               return (
                 <div key={item.label} className="rounded-premium border border-white/10 bg-white/8 p-5">
                   <Icon size={22} className="text-primary-300" />
-                  <p className="mt-4 text-3xl font-black">{item.value}</p>
+                  <p className="mt-4 text-2xl font-black">{item.value}</p>
                   <p className="mt-1 text-sm font-medium text-slate-300">{item.label}</p>
                 </div>
               );
@@ -495,7 +606,7 @@ const LandingPage = () => {
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 rounded-premium bg-primary-600 p-8 text-white shadow-premium-xl lg:flex-row lg:items-center">
           <div>
             <h2 className="text-3xl font-black">Prêt à piloter vos expéditions ?</h2>
-            <p className="mt-2 max-w-2xl text-sm font-medium text-blue-50">Créez un compte et accédez à la nouvelle console AFRIDEEX.</p>
+            <p className="mt-2 max-w-2xl text-sm font-medium text-blue-50">Créez un compte et accédez à la console AFRIDEEX.</p>
           </div>
           <Link to="/register" className="btn-premium-primary bg-white text-slate-950 hover:bg-blue-50">
             Démarrer
@@ -506,36 +617,15 @@ const LandingPage = () => {
 
       <footer className="border-t border-slate-200 bg-white px-4 py-10 dark:border-slate-800 dark:bg-slate-950 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center">
-            <BrandLogo variant="auto" />
-          </div>
+          <BrandLogo variant="auto" />
           <p className="text-xs font-medium text-slate-400">© {new Date().getFullYear()} AFRIDEEX. Tous droits réservés.</p>
           <div className="flex gap-5 text-xs font-bold text-slate-500">
-            <a href="#" className="hover:text-primary-700">Conditions</a>
-            <a href="#" className="hover:text-primary-700">Confidentialité</a>
-            <a href="#" className="hover:text-primary-700">Assistance</a>
+            <a href="#services" className="hover:text-primary-700">Services</a>
+            <a href="#pricing" className="hover:text-primary-700">Tarifs</a>
+            <Link to="/track" className="hover:text-primary-700">Suivi</Link>
           </div>
         </div>
       </footer>
-
-      {videoOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-4xl overflow-hidden rounded-premium border border-white/10 bg-black shadow-premium-xl">
-            <button onClick={() => setVideoOpen(false)} className="absolute right-4 top-4 z-10 icon-button bg-slate-900/70 text-white" type="button" aria-label="Fermer">
-              <X size={18} />
-            </button>
-            <div className="aspect-video w-full">
-              <iframe
-                className="h-full w-full"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-                title="AFRIDEEX Video Presentation"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {trackedParcel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm animate-fade-in">
@@ -585,5 +675,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
-

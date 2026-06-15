@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
@@ -20,8 +20,10 @@ import Layout from '../../components/Common/Layout';
 import EmptyState from '../../components/Common/EmptyState';
 import { SkeletonTable } from '../../components/Common/Skeleton';
 import TicketPdfPreview from '../../components/Common/TicketPdfPreview';
+import { BRAND } from '../../constants/brand';
 import { parcelService, ticketService } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { usePageMeta } from '../../hooks/usePageMeta';
 import {
   formatCurrency,
   formatDate,
@@ -46,6 +48,12 @@ const statusOptions = [
 const todayIso = () => new Date().toISOString().split('T')[0];
 
 const MyParcels = () => {
+  usePageMeta({
+    title: `Mes colis - ${BRAND.name}`,
+    description: 'Consultez, filtrez et imprimez les tickets de vos colis AFRIDEEX.',
+    path: '/my-parcels',
+  });
+
   const navigate = useNavigate();
   const toast = useToast();
   const [parcels, setParcels] = useState([]);
@@ -64,10 +72,6 @@ const MyParcels = () => {
   const pageSize = 6;
 
   useEffect(() => {
-    fetchParcels();
-  }, []);
-
-  useEffect(() => {
     setCurrentPage(0);
   }, [searchTerm, statusFilter, dateFilter]);
 
@@ -77,7 +81,7 @@ const MyParcels = () => {
     }
   }, [ticketPreviewUrl]);
 
-  const fetchParcels = async () => {
+  const fetchParcels = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -90,14 +94,18 @@ const MyParcels = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchParcels();
+  }, [fetchParcels]);
 
   const exportToJson = () => {
     try {
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(parcels, null, 2))}`;
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', 'mes_colis_quickship.json');
+      downloadAnchor.setAttribute('download', 'mes_colis_afrideex.json');
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();

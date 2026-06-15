@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, KeyRound, Mail, Phone, Search, Users, X } from 'lucide-react';
 import Layout from '../../components/Common/Layout';
 import EmptyState from '../../components/Common/EmptyState';
 import { SkeletonTable } from '../../components/Common/Skeleton';
+import { BRAND } from '../../constants/brand';
 import { adminService } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { usePageMeta } from '../../hooks/usePageMeta';
 import { PageHeader, SectionHeader } from '../../components/Common/LogisticsUI';
 
 const getRoleBadge = (roles = []) => {
@@ -18,6 +20,12 @@ const getRoleBadge = (roles = []) => {
 };
 
 const AdminUsers = () => {
+  usePageMeta({
+    title: `Utilisateurs - ${BRAND.name}`,
+    description: 'Gérez les utilisateurs AFRIDEEX et la réinitialisation de mot de passe par admin.',
+    path: '/admin/users',
+  });
+
   const toast = useToast();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,14 +38,10 @@ const AdminUsers = () => {
   const pageSize = 7;
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  useEffect(() => {
     setCurrentPage(0);
   }, [searchTerm]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
       const data = await adminService.getUsers();
@@ -49,7 +53,11 @@ const AdminUsers = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const filteredUsers = users.filter((u) => {
     const term = searchTerm.toLowerCase();

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -56,11 +56,7 @@ const DriverDashboard = () => {
   const [updateDescription, setUpdateDescription] = useState('');
   const [submittingUpdate, setSubmittingUpdate] = useState(false);
 
-  useEffect(() => {
-    fetchParcels();
-  }, []);
-
-  const fetchParcels = async () => {
+  const fetchParcels = useCallback(async () => {
     setLoading(true);
     try {
       const data = await driverService.getAssignedParcels();
@@ -72,7 +68,11 @@ const DriverDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchParcels();
+  }, [fetchParcels]);
 
   const openUpdateModal = (parcel) => {
     setUpdatingParcel(parcel);

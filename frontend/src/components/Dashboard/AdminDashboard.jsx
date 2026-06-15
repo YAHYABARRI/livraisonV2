@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   AlertCircle,
@@ -33,11 +33,7 @@ const AdminDashboard = () => {
   const [selectedDriverId, setSelectedDriverId] = useState('');
   const [submittingAssign, setSubmittingAssign] = useState(false);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -56,7 +52,11 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
 
   const openAssignModal = (parcel) => {
     setAssigningParcel(parcel);
@@ -121,7 +121,7 @@ const AdminDashboard = () => {
           <StatCard title="Clients actifs" value={stats.totalClients} detail="Comptes expéditeurs" icon={Users} tone="blue" />
           <StatCard title="Livreurs" value={stats.totalDrivers} detail="Capacité disponible" icon={Truck} tone="amber" />
           <StatCard title="Colis total" value={stats.totalParcels} detail="Flux plateforme" icon={Package} tone="sky" />
-          <StatCard title="Chiffre d'affaires" value={formatCurrency(stats.simulatedRevenue)} detail="Revenu simulé" icon={Coins} tone="green" />
+          <StatCard title="Chiffre d'affaires" value={formatCurrency(stats.simulatedRevenue)} detail="Revenu estimé" icon={Coins} tone="green" />
         </div>
       )}
 

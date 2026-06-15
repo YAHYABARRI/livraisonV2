@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Edit3, Loader2, Mail, Phone, Save, Shield, User, X } from 'lucide-react';
 import Layout from '../components/Common/Layout';
+import { BRAND } from '../constants/brand';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { authService } from '../services/api';
 import { PageHeader, SectionHeader } from '../components/Common/LogisticsUI';
 
@@ -13,6 +15,12 @@ const getRoleLabel = (roles = []) => {
 };
 
 const Profile = () => {
+  usePageMeta({
+    title: `Profil - ${BRAND.name}`,
+    description: 'Gérez vos informations de compte AFRIDEEX utilisées pour les expéditions, notifications et opérations.',
+    path: '/profile',
+  });
+
   const { user, refreshUser } = useAuth();
   const toast = useToast();
   const [isEditing, setIsEditing] = useState(false);

@@ -14,8 +14,10 @@ import {
   User,
 } from 'lucide-react';
 import Layout from '../../components/Common/Layout';
+import { BRAND } from '../../constants/brand';
 import { parcelService } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { usePageMeta } from '../../hooks/usePageMeta';
 import { parcelSchema } from '../../utils/validators';
 import { PageHeader, SectionHeader } from '../../components/Common/LogisticsUI';
 
@@ -24,6 +26,12 @@ const FieldError = ({ error }) => (
 );
 
 const CreateParcel = () => {
+  usePageMeta({
+    title: `Créer un colis - ${BRAND.name}`,
+    description: 'Créez une nouvelle expédition AFRIDEEX avec destinataire, colis, ville et adresse de livraison.',
+    path: '/create-parcel',
+  });
+
   const navigate = useNavigate();
   const toast = useToast();
   const [error, setError] = useState(null);

@@ -82,9 +82,10 @@ const Navbar = () => {
         </Link>
 
         {!isAuthenticated && (
-          <nav className="hidden items-center gap-6 text-sm font-bold text-slate-600 lg:flex">
-            <Link to="/" className="transition-colors hover:text-primary-700">Accueil</Link>
-            <Link to="/track" className="transition-colors hover:text-primary-700">Suivi public</Link>
+          <nav className="hidden items-center gap-7 text-sm font-extrabold text-slate-600 lg:flex">
+            <a href="/#services" className="transition-colors hover:text-primary-700">Services</a>
+            <a href="/#pricing" className="transition-colors hover:text-primary-700">Tarifs</a>
+            <Link to="/track" className="transition-colors hover:text-primary-700">Suivi colis</Link>
           </nav>
         )}
 

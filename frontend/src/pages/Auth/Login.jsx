@@ -4,11 +4,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertCircle, Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
 import AuthFrame from '../../components/Common/AuthFrame';
+import { BRAND } from '../../constants/brand';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { usePageMeta } from '../../hooks/usePageMeta';
+import { getApiErrorMessage } from '../../utils/apiError';
 import { loginSchema } from '../../utils/validators';
 
 const Login = () => {
+  usePageMeta({
+    title: `Connexion - ${BRAND.name}`,
+    description: 'Connectez-vous à votre espace AFRIDEEX pour suivre les colis, tickets et rapports.',
+    path: '/login',
+  });
+
   const { login } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
@@ -36,7 +45,7 @@ const Login = () => {
       navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      const errMsg = err.response?.data?.message || 'Identifiants incorrects ou connexion au serveur impossible.';
+      const errMsg = getApiErrorMessage(err, 'Identifiants incorrects ou connexion au serveur impossible.');
       setError(errMsg);
       toast.error(errMsg);
     }
@@ -61,7 +70,7 @@ const Login = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
         <div className="space-y-1.5">
           <label htmlFor="email" className="text-sm font-extrabold text-slate-700 dark:text-slate-300">Adresse email</label>
           <div className="relative">
@@ -69,6 +78,7 @@ const Login = () => {
             <input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="nom@exemple.com"
               className={`input-premium pl-10 ${errors.email ? 'border-red-400' : ''}`}
               {...register('email')}
@@ -84,6 +94,7 @@ const Login = () => {
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
               placeholder="••••••••"
               className={`input-premium pl-10 pr-10 ${errors.password ? 'border-red-400' : ''}`}
               {...register('password')}
