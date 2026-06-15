@@ -27,6 +27,9 @@ public class ParcelRequest {
     @NotBlank(message = "L'adresse de livraison est requise")
     private String deliveryAddress;
 
+    @NotBlank(message = "La ville de livraison est requise")
+    private String deliveryCity;
+
     private String description;
 
     @NotNull(message = "Le poids du colis est requis")

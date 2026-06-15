@@ -93,7 +93,7 @@ const TrackParcel = () => {
           eyebrow="Tracking"
           icon={Package}
           title="Suivi d'expédition en temps réel"
-          description="Consultez l'avancement, les informations logistiques et les événements de transport d'un colis QuickShip."
+          description="Consultez l'avancement, les informations logistiques et les événements de transport d'un colis AFRIDEEX."
         />
 
         <section className="surface overflow-hidden">

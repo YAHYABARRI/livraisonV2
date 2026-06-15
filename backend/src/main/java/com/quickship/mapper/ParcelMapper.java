@@ -31,6 +31,7 @@ public class ParcelMapper {
                 .recipientPhone(parcel.getRecipientPhone())
                 .pickupAddress(parcel.getPickupAddress())
                 .deliveryAddress(parcel.getDeliveryAddress())
+                .deliveryCity(parcel.getDeliveryCity())
                 .description(parcel.getDescription())
                 .weight(parcel.getWeight())
                 .status(parcel.getStatus().name())

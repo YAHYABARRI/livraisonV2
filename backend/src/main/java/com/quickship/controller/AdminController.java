@@ -3,6 +3,7 @@ package com.quickship.controller;
 import com.quickship.dto.AssignDriverRequest;
 import com.quickship.dto.DashboardStatsResponse;
 import com.quickship.dto.ParcelResponse;
+import com.quickship.dto.ResetPasswordRequest;
 import com.quickship.dto.UserResponse;
 import com.quickship.service.AdminService;
 import jakarta.validation.Valid;
@@ -56,5 +57,12 @@ public class AdminController {
     @GetMapping("/stats")
     public ResponseEntity<DashboardStatsResponse> getDashboardStats() {
         return ResponseEntity.ok(adminService.getDashboardStats());
+    }
+
+    @PutMapping("/users/{userId}/password")
+    public ResponseEntity<UserResponse> resetUserPassword(
+            @PathVariable Long userId,
+            @Valid @RequestBody ResetPasswordRequest request) {
+        return ResponseEntity.ok(adminService.resetUserPassword(userId, request.getNewPassword()));
     }
 }

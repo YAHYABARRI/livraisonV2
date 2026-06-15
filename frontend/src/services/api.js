@@ -150,6 +150,10 @@ export const adminService = {
     const response = await api.get('/admin/stats');
     return response.data;
   },
+  resetUserPassword: async (userId, newPassword) => {
+    const response = await api.put(`/admin/users/${userId}/password`, { newPassword });
+    return response.data;
+  },
 };
 
 // Endpoints Rapports PDF

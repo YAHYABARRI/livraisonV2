@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import Navbar from './Navbar';
 import Sidebar, { SidebarContent } from './Sidebar';
+import BrandLogo from './BrandLogo';
 
 const Layout = ({ children }) => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -34,7 +35,7 @@ const Layout = ({ children }) => {
             />
             <div className="relative h-full w-[min(19rem,82vw)] bg-white p-4 shadow-2xl animate-slide-right dark:bg-slate-950">
               <div className="mb-5 flex items-center justify-between">
-                <p className="text-sm font-black uppercase tracking-wider text-slate-400">Navigation</p>
+                <BrandLogo variant="auto" />
                 <button
                   onClick={() => setMobileSidebarOpen(false)}
                   className="icon-button"

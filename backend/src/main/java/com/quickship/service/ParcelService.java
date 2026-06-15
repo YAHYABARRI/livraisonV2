@@ -47,6 +47,7 @@ public class ParcelService {
                 .recipientPhone(request.getRecipientPhone())
                 .pickupAddress(request.getPickupAddress())
                 .deliveryAddress(request.getDeliveryAddress())
+                .deliveryCity(request.getDeliveryCity())
                 .description(request.getDescription())
                 .weight(request.getWeight())
                 .status(ParcelStatus.CREATED)

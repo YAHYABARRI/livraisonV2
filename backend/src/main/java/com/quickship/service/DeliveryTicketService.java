@@ -4,6 +4,7 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
+import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
@@ -24,18 +25,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DeliveryTicketService {
 
-    private static final String COMPANY_NAME = "QuickShip";
-    private static final String COMPANY_WEBSITE = "www.quickship.ma";
+    private static final String COMPANY_NAME = "AFRIDEEX";
+    private static final String COMPANY_WEBSITE = "www.afrideex.ma";
     private static final String COMPANY_PHONE = "+212 701 212 524";
     private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -98,14 +99,14 @@ public class DeliveryTicketService {
                 PdfPCell wrapper = new PdfPCell(createTicket(parcel));
                 wrapper.setBorder(Rectangle.NO_BORDER);
                 wrapper.setPadding(4f);
-                wrapper.setFixedHeight(248f);
+                wrapper.setFixedHeight(260f);
                 grid.addCell(wrapper);
             }
 
             if (parcels.size() % 2 != 0) {
                 PdfPCell empty = new PdfPCell(new Phrase(""));
                 empty.setBorder(Rectangle.NO_BORDER);
-                empty.setFixedHeight(248f);
+                empty.setFixedHeight(260f);
                 grid.addCell(empty);
             }
 
@@ -136,6 +137,13 @@ public class DeliveryTicketService {
         container.setUseAscender(true);
         container.setUseDescender(true);
 
+        Image logo = loadLogo(88f, 38f);
+        if (logo != null) {
+            logo.setAlignment(Element.ALIGN_CENTER);
+            logo.setSpacingAfter(3f);
+            container.addElement(logo);
+        }
+
         Paragraph disclaimer = new Paragraph(
                 COMPANY_NAME + " n'est qu'une société de livraison, et n'est pas responsable du contenu de ce colis. En cas de problème, veuillez contacter le vendeur.",
                 disclaimerFont
@@ -153,7 +161,7 @@ public class DeliveryTicketService {
         PdfPTable customer = new PdfPTable(new float[]{0.32f, 0.68f});
         customer.setWidthPercentage(100);
         addRow(customer, "Nom complet", parcel.getRecipientName(), labelFont, valueFont);
-        addRow(customer, "Ville", extractCity(parcel.getDeliveryAddress()), labelFont, valueFont);
+        addRow(customer, "Ville", parcelCity(parcel), labelFont, valueFont);
         addRow(customer, "Adresse", parcel.getDeliveryAddress(), labelFont, valueFont);
         addRow(customer, "Téléphone", parcel.getRecipientPhone(), labelFont, valueFont);
         container.addElement(customer);
@@ -204,6 +212,19 @@ public class DeliveryTicketService {
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setPadding(2f);
         table.addCell(cell);
+    }
+
+    private Image loadLogo(float maxWidth, float maxHeight) {
+        try (InputStream is = getClass().getResourceAsStream("/logo-dark.png")) {
+            if (is == null) {
+                return null;
+            }
+            Image logo = Image.getInstance(is.readAllBytes());
+            logo.scaleToFit(maxWidth, maxHeight);
+            return logo;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private Paragraph dottedSeparator() {
@@ -259,6 +280,13 @@ public class DeliveryTicketService {
         String[] parts = address.split(",");
         String city = parts.length > 1 ? parts[parts.length - 1].trim() : parts[0].trim();
         return city.isBlank() ? address : city;
+    }
+
+    private String parcelCity(Parcel parcel) {
+        if (parcel.getDeliveryCity() != null && !parcel.getDeliveryCity().isBlank()) {
+            return parcel.getDeliveryCity();
+        }
+        return "N/A";
     }
 
     private String formatMoney(Double value) {

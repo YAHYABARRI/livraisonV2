@@ -118,6 +118,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .recipientPhone("0712345678")
                 .pickupAddress("12 Rue de la Paix, 75002 Paris")
                 .deliveryAddress("45 Avenue des Champs-Élysées, 75008 Paris")
+                .deliveryCity("Paris")
                 .description("Documents professionnels importants")
                 .weight(1.2)
                 .status(ParcelStatus.CREATED)
@@ -139,6 +140,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .recipientPhone("0698765432")
                 .pickupAddress("8 Boulevard Haussmann, 75009 Paris")
                 .deliveryAddress("18 Rue Royale, 69001 Lyon")
+                .deliveryCity("Lyon")
                 .description("Ordinateur portable de remplacement")
                 .weight(3.5)
                 .status(ParcelStatus.IN_TRANSIT)
@@ -176,6 +178,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .recipientPhone("0633445566")
                 .pickupAddress("5 Rue de Rivoli, 75004 Paris")
                 .deliveryAddress("30 Place Bellecour, 69002 Lyon")
+                .deliveryCity("Lyon")
                 .description("Cadeau d'anniversaire")
                 .weight(2.0)
                 .status(ParcelStatus.DELIVERED)
@@ -228,6 +231,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 p.setParcelType(determineLegacyParcelType(p.getWeight()));
                 updated = true;
             }
+            if (p.getDeliveryCity() == null || p.getDeliveryCity().isBlank()) {
+                p.setDeliveryCity(extractLegacyCity(p.getDeliveryAddress()));
+                updated = true;
+            }
             if (updated) {
                 parcelRepository.save(p);
             }
@@ -251,5 +258,14 @@ public class DatabaseSeeder implements CommandLineRunner {
         if (w <= 5.0) return "Petit Colis";
         if (w <= 10.0) return "Colis Moyen";
         return "Grand Colis";
+    }
+
+    private String extractLegacyCity(String address) {
+        if (address == null || address.isBlank()) {
+            return null;
+        }
+        String[] parts = address.split(",");
+        String city = parts.length > 1 ? parts[parts.length - 1].trim() : parts[0].trim();
+        return city.isBlank() ? null : city;
     }
 }

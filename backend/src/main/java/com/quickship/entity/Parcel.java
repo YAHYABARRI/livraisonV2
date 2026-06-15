@@ -37,6 +37,9 @@ public class Parcel {
     @Column(name = "delivery_address", nullable = false, length = 255)
     private String deliveryAddress;
 
+    @Column(name = "delivery_city", length = 100)
+    private String deliveryCity;
+
     @Column(length = 500)
     private String description;
 

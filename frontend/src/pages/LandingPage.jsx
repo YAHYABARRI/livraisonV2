@@ -4,9 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowRight,
   Award,
-  Box,
   Building2,
-  Clock3,
   Download,
   MapPin,
   MessageCircle,
@@ -19,11 +17,13 @@ import {
   X,
 } from 'lucide-react';
 import Navbar from '../components/Common/Navbar';
+import BrandLogo from '../components/Common/BrandLogo';
 import { parcelService } from '../services/api';
 import heroLogistics from '../assets/landing-hero-logistics.webp';
 import lastMilePhoto from '../assets/landing-last-mile.webp';
 import hubOperationsPhoto from '../assets/landing-hub-operations.webp';
 import moroccoDeliveryMap from '../assets/morocco-delivery-map.webp';
+import { foxDeliveryRates, foxRatesMeta } from '../data/foxDeliveryRates';
 import {
   ProgressRoute,
   StatusBadge,
@@ -31,49 +31,7 @@ import {
   formatDate,
 } from '../components/Common/LogisticsUI';
 
-const cities = [
-  { id: 'CAS', name: 'Casablanca' },
-  { id: 'RAB', name: 'Rabat' },
-  { id: 'MAR', name: 'Marrakech' },
-  { id: 'AGA', name: 'Agadir' },
-  { id: 'FES', name: 'Fès' },
-  { id: 'TAN', name: 'Tanger' },
-  { id: 'OUJ', name: 'Oujda' },
-  { id: 'MEK', name: 'Meknès' },
-];
-
-const rates = [
-  { from: 'Casablanca Agence', to: 'Casablanca', price: '25 DH', time: '24h' },
-  { from: 'Casablanca Agence', to: 'Rabat', price: '35 DH', time: '24h' },
-  { from: 'Casablanca Agence', to: 'Marrakech', price: '35 DH', time: '24h' },
-  { from: 'Casablanca Agence', to: 'Fès', price: '40 DH', time: '24h' },
-  { from: 'Casablanca Agence', to: 'Agadir', price: '40 DH', time: '48h' },
-  { from: 'Casablanca Agence', to: 'Tanger', price: '40 DH', time: '48h' },
-  { from: 'Casablanca Agence', to: 'Oujda', price: '45 DH', time: '72h' },
-  { from: 'Rabat Agence', to: 'Rabat', price: '25 DH', time: '24h' },
-  { from: 'Rabat Agence', to: 'Casablanca', price: '35 DH', time: '24h' },
-  { from: 'Rabat Agence', to: 'Tanger', price: '40 DH', time: '24h' },
-  { from: 'Marrakech Agence', to: 'Marrakech', price: '25 DH', time: '24h' },
-  { from: 'Marrakech Agence', to: 'Agadir', price: '35 DH', time: '24h' },
-];
-
-const parsePrice = (price) => Number.parseInt(price, 10) || 0;
-
-const destinationRates = Array.from(
-  rates
-    .reduce((acc, rate) => {
-      const current = acc.get(rate.to);
-      if (!current || parsePrice(rate.price) < parsePrice(current.price)) {
-        acc.set(rate.to, rate);
-      }
-      return acc;
-    }, new Map())
-    .values()
-).sort((a, b) => {
-  const aIndex = cities.findIndex((city) => city.name === a.to);
-  const bIndex = cities.findIndex((city) => city.name === b.to);
-  return (aIndex === -1 ? 99 : aIndex) - (bIndex === -1 ? 99 : bIndex);
-});
+const formatDirham = (value) => `${Number(value || 0).toFixed(2)} DH`;
 
 const MoroccoCoverageMap = () => {
   return (
@@ -81,7 +39,7 @@ const MoroccoCoverageMap = () => {
       <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
         <img
           src={moroccoDeliveryMap}
-          alt="Carte de livraison au Maroc avec zones d'expédition et véhicule QuickShip"
+          alt="Carte de livraison au Maroc avec zones d'expédition et véhicule AFRIDEEX"
           className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
           loading="lazy"
         />
@@ -99,7 +57,7 @@ const faqs = [
   },
   {
     q: "Comment suivre l'acheminement de mon colis ?",
-    a: 'Saisissez simplement votre numéro de suivi QuickShip. La route, le statut et les événements de transport sont affichés en temps réel.',
+    a: 'Saisissez simplement votre numéro de suivi AFRIDEEX. La route, le statut et les événements de transport sont affichés en temps réel.',
   },
   {
     q: 'Proposez-vous le paiement à la livraison ?',
@@ -130,10 +88,10 @@ const LandingPage = () => {
   const [rateSearch, setRateSearch] = useState('');
   const [selectedCity, setSelectedCity] = useState('ALL');
 
-  const filteredRates = destinationRates.filter((rate) => {
+  const filteredRates = foxDeliveryRates.filter((rate) => {
     const term = rateSearch.toLowerCase();
-    const matchesSearch = rate.to.toLowerCase().includes(term);
-    const matchesCity = selectedCity === 'ALL' || rate.to === selectedCity;
+    const matchesSearch = rate.city.toLowerCase().includes(term);
+    const matchesCity = selectedCity === 'ALL' || rate.city === selectedCity;
     return matchesSearch && matchesCity;
   });
 
@@ -185,7 +143,7 @@ const LandingPage = () => {
               transition={{ delay: 0.05 }}
               className="max-w-3xl text-4xl font-black leading-[1.02] tracking-normal sm:text-6xl lg:text-7xl"
             >
-              QuickShip
+              AFRIDEEX
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
@@ -398,7 +356,7 @@ const LandingPage = () => {
             <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">Tarifs</p>
             <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">Simulateur de coûts.</h2>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500 dark:text-slate-400">
-              Choisissez une destination et visualisez instantanément le tarif QuickShip disponible au Maroc.
+              Choisissez une destination et visualisez instantanément le tarif AFRIDEEX disponible au Maroc.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:w-[34rem]">
@@ -408,7 +366,7 @@ const LandingPage = () => {
             </div>
             <select className="input-premium" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}>
               <option value="ALL">Toutes destinations</option>
-              {destinationRates.map((rate) => <option key={rate.to} value={rate.to}>{rate.to}</option>)}
+              {foxDeliveryRates.map((rate) => <option key={rate.city} value={rate.city}>{rate.city}</option>)}
             </select>
           </div>
         </div>
@@ -422,17 +380,17 @@ const LandingPage = () => {
               </div>
               <span className="inline-flex w-fit items-center gap-2 rounded-full bg-secondary-50 px-3 py-1 text-xs font-black text-secondary-700 dark:bg-secondary-950/40 dark:text-secondary-300">
                 <MapPin size={13} />
-                {filteredRates.length} affichée{filteredRates.length > 1 ? 's' : ''}
+                {filteredRates.length} / {foxRatesMeta.uniqueCities} affichée{filteredRates.length > 1 ? 's' : ''}
               </span>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="max-h-[42rem] overflow-auto">
               <table className="w-full min-w-[38rem] border-separate border-spacing-0 text-left">
                 <thead>
                   <tr className="bg-slate-950 text-xs font-black uppercase tracking-wider text-white dark:bg-slate-950">
                     <th className="px-5 py-4">Destination</th>
-                    <th className="px-5 py-4">Délai estimé</th>
-                    <th className="px-5 py-4 text-right">Tarif</th>
+                    <th className="px-5 py-4 text-right">Frais livraison</th>
+                    <th className="px-5 py-4 text-right">Frais retour</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -442,27 +400,25 @@ const LandingPage = () => {
                     </tr>
                   ) : (
                     filteredRates.map((rate) => (
-                      <tr key={`${rate.to}-${rate.price}`} className="group bg-white transition-colors duration-200 hover:bg-primary-50/50 dark:bg-slate-900 dark:hover:bg-slate-800/60">
+                      <tr key={`${rate.city}-${rate.deliveryFee}-${rate.returnFee}`} className="group bg-white transition-colors duration-200 hover:bg-primary-50/50 dark:bg-slate-900 dark:hover:bg-slate-800/60">
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
                             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-premium bg-primary-50 text-primary-700 transition-colors duration-200 group-hover:bg-primary-600 group-hover:text-white dark:bg-primary-950/40 dark:text-primary-300">
                               <MapPin size={17} />
                             </span>
                             <div>
-                              <p className="text-sm font-black text-slate-950 dark:text-white">{rate.to}</p>
+                              <p className="text-sm font-black text-slate-950 dark:text-white">{rate.city}</p>
                               <p className="mt-0.5 text-xs font-semibold text-slate-400">Destination Maroc</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-5 py-4">
-                          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-650 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
-                            <Clock3 size={14} className="text-primary-600 dark:text-primary-300" />
-                            {rate.time}
-                          </span>
+                        <td className="px-5 py-4 text-right">
+                          <p className="text-lg font-black text-primary-700 dark:text-primary-300">{formatDirham(rate.deliveryFee)}</p>
+                          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Colis standard</p>
                         </td>
                         <td className="px-5 py-4 text-right">
-                          <p className="text-lg font-black text-primary-700 dark:text-primary-300">{rate.price}</p>
-                          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Colis standard</p>
+                          <p className="text-sm font-black text-slate-700 dark:text-slate-200">{formatDirham(rate.returnFee)}</p>
+                          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Retour</p>
                         </td>
                       </tr>
                     ))
@@ -539,7 +495,7 @@ const LandingPage = () => {
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 rounded-premium bg-primary-600 p-8 text-white shadow-premium-xl lg:flex-row lg:items-center">
           <div>
             <h2 className="text-3xl font-black">Prêt à piloter vos expéditions ?</h2>
-            <p className="mt-2 max-w-2xl text-sm font-medium text-blue-50">Créez un compte et accédez à la nouvelle console QuickShip.</p>
+            <p className="mt-2 max-w-2xl text-sm font-medium text-blue-50">Créez un compte et accédez à la nouvelle console AFRIDEEX.</p>
           </div>
           <Link to="/register" className="btn-premium-primary bg-white text-slate-950 hover:bg-blue-50">
             Démarrer
@@ -550,13 +506,10 @@ const LandingPage = () => {
 
       <footer className="border-t border-slate-200 bg-white px-4 py-10 dark:border-slate-800 dark:bg-slate-950 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-premium bg-slate-950 text-white dark:bg-white dark:text-slate-950">
-              <Box size={21} />
-            </div>
-            <span className="text-xl font-black">Quick<span className="text-primary-600">Ship</span></span>
+          <div className="flex items-center">
+            <BrandLogo variant="auto" />
           </div>
-          <p className="text-xs font-medium text-slate-400">© {new Date().getFullYear()} QuickShip. Tous droits réservés.</p>
+          <p className="text-xs font-medium text-slate-400">© {new Date().getFullYear()} AFRIDEEX. Tous droits réservés.</p>
           <div className="flex gap-5 text-xs font-bold text-slate-500">
             <a href="#" className="hover:text-primary-700">Conditions</a>
             <a href="#" className="hover:text-primary-700">Confidentialité</a>
@@ -575,7 +528,7 @@ const LandingPage = () => {
               <iframe
                 className="h-full w-full"
                 src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-                title="QuickShip Video Presentation"
+                title="AFRIDEEX Video Presentation"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
@@ -632,3 +585,5 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
+

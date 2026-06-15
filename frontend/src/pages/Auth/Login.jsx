@@ -46,7 +46,7 @@ const Login = () => {
     <AuthFrame
       eyebrow="Connexion"
       title="Accéder à la console"
-      description="Retrouvez vos colis, tournées, rapports et actions prioritaires dans votre espace QuickShip."
+      description="Retrouvez vos colis, tournées, rapports et actions prioritaires dans votre espace AFRIDEEX."
       footer={(
         <p className="text-center text-sm font-medium text-slate-500 dark:text-slate-400">
           Vous n'avez pas de compte ?{' '}

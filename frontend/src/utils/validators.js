@@ -49,6 +49,10 @@ export const parcelSchema = z.object({
   deliveryAddress: z.string()
     .trim()
     .min(10, "L'adresse de livraison doit faire au moins 10 caractères"),
+  deliveryCity: z.string()
+    .trim()
+    .min(2, 'La ville de livraison est requise')
+    .max(100, 'La ville de livraison est trop longue'),
   description: z.string()
     .max(500, 'La description ne doit pas dépasser 500 caractères')
     .optional(),

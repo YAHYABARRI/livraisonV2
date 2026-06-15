@@ -12,6 +12,7 @@ import com.quickship.repository.DeliveryLogRepository;
 import com.quickship.repository.ParcelRepository;
 import com.quickship.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,9 @@ public class AdminService {
 
     @Autowired
     private ParcelMapper parcelMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
@@ -140,5 +144,15 @@ public class AdminService {
     public Page<ParcelResponse> getAllParcelsPaginated(String search, Pageable pageable) {
         return parcelRepository.searchAllParcels(search, pageable)
                 .map(parcelMapper::toResponse);
+    }
+
+    @Transactional
+    public UserResponse resetUserPassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvÃ© avec l'id : " + userId));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        User savedUser = userRepository.save(user);
+        return userMapper.toResponse(savedUser);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -126,7 +127,7 @@ public class ReportService {
                 table.addCell(createLeftCell(parcel.getTrackingId(), cellFont));
                 table.addCell(createLeftCell(parcel.getRecipientName(), cellFont));
                 table.addCell(createCenterCell(parcel.getRecipientPhone(), cellFont));
-                table.addCell(createLeftCell(extractCity(parcel.getDeliveryAddress()), cellFont));
+                table.addCell(createLeftCell(parcelCity(parcel), cellFont));
 
                 double price = parcel.getShippingPrice() != null ? parcel.getShippingPrice() : 0.0;
                 totalRevenue += price;
@@ -208,6 +209,13 @@ public class ReportService {
         return address.length() > 20 ? address.substring(0, 17) + "..." : address;
     }
 
+    private String parcelCity(Parcel parcel) {
+        if (parcel.getDeliveryCity() != null && !parcel.getDeliveryCity().isBlank()) {
+            return parcel.getDeliveryCity();
+        }
+        return "N/A";
+    }
+
     private String formatMoney(double value) {
         return String.format("%.2f DH", value);
     }
@@ -253,17 +261,37 @@ public class ReportService {
 
         private PdfPTable createHeaderTable() throws DocumentException {
             PdfPTable header = new PdfPTable(2);
-            header.setWidths(new float[]{1.35f, 3f});
+            header.setWidths(new float[]{3.25f, 1.15f});
             header.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
             Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.BLACK);
             Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
 
-            addHeaderRow(header, "Nom du livreur", driverName, labelFont, valueFont);
-            addHeaderRow(header, "Téléphone du livreur", driverPhone, labelFont, valueFont);
-            addHeaderRow(header, "Nombre de colis", String.valueOf(parcelCount), labelFont, valueFont);
-            addHeaderRow(header, "Date", docDate, labelFont, valueFont);
-            addHeaderRow(header, "Livreur Agence", "QuickShip Agence", labelFont, valueFont);
+            PdfPTable info = new PdfPTable(2);
+            info.setWidths(new float[]{1.35f, 3f});
+            info.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+            addHeaderRow(info, "Nom du livreur", driverName, labelFont, valueFont);
+            addHeaderRow(info, "T\u00e9l\u00e9phone du livreur", driverPhone, labelFont, valueFont);
+            addHeaderRow(info, "Nombre de colis", String.valueOf(parcelCount), labelFont, valueFont);
+            addHeaderRow(info, "Date", docDate, labelFont, valueFont);
+            addHeaderRow(info, "Livreur Agence", "AFRIDEEX Agence", labelFont, valueFont);
+
+            PdfPCell infoCell = new PdfPCell(info);
+            infoCell.setBorder(Rectangle.NO_BORDER);
+            infoCell.setPadding(0);
+            header.addCell(infoCell);
+
+            PdfPCell logoCell = new PdfPCell();
+            logoCell.setBorder(Rectangle.NO_BORDER);
+            logoCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            logoCell.setVerticalAlignment(Element.ALIGN_TOP);
+            logoCell.setPadding(0);
+            Image logo = loadLogo();
+            if (logo != null) {
+                logo.setAlignment(Element.ALIGN_RIGHT);
+                logoCell.addElement(logo);
+            }
+            header.addCell(logoCell);
 
             PdfPCell separator = new PdfPCell(new Phrase(""));
             separator.setColspan(2);
@@ -272,6 +300,19 @@ public class ReportService {
             separator.setBorderColor(Color.BLACK);
             header.addCell(separator);
             return header;
+        }
+
+        private Image loadLogo() {
+            try (InputStream is = ReportService.class.getResourceAsStream("/logo-dark.png")) {
+                if (is == null) {
+                    return null;
+                }
+                Image logo = Image.getInstance(is.readAllBytes());
+                logo.scaleToFit(92f, 34f);
+                return logo;
+            } catch (Exception e) {
+                return null;
+            }
         }
 
         private void addHeaderRow(PdfPTable table, String label, String value, Font labelFont, Font valueFont) {

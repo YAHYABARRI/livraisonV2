@@ -22,6 +22,7 @@ public class ParcelResponse {
     private String recipientPhone;
     private String pickupAddress;
     private String deliveryAddress;
+    private String deliveryCity;
     private String description;
     private Double weight;
     private String status;

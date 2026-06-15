@@ -49,6 +49,8 @@ const extractCity = (address) => {
   return parts.length > 1 ? parts[parts.length - 1] : parts[0] || 'Ville inconnue';
 };
 
+const parcelCity = (parcel) => parcel.deliveryCity || extractCity(parcel.deliveryAddress);
+
 const AdminParcels = () => {
   const toast = useToast();
   const [parcels, setParcels] = useState([]);
@@ -281,14 +283,14 @@ const AdminParcels = () => {
       parcel.deliveryAddress?.toLowerCase().includes(term);
     const matchesFilter = statusFilter === 'ALL' || parcel.status === statusFilter;
     const matchesDate = !dateFilter || parcel.createdAt?.slice(0, 10) === dateFilter;
-    const matchesCity = cityFilter === 'ALL' || extractCity(parcel.deliveryAddress) === cityFilter;
+    const matchesCity = cityFilter === 'ALL' || parcelCity(parcel) === cityFilter;
     const matchesClient = clientFilter === 'ALL' || String(parcel.client?.id) === clientFilter;
     return matchesSearch && matchesFilter && matchesDate && matchesCity && matchesClient;
   });
 
   const totalPages = Math.ceil(filteredParcels.length / pageSize);
   const paginatedParcels = filteredParcels.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
-  const visibleCities = Array.from(new Set(parcels.map((parcel) => extractCity(parcel.deliveryAddress)))).sort((a, b) => a.localeCompare(b));
+  const visibleCities = Array.from(new Set(parcels.map((parcel) => parcelCity(parcel)))).sort((a, b) => a.localeCompare(b));
   const allPageSelected = paginatedParcels.length > 0 && paginatedParcels.every((parcel) => selectedParcelIds.includes(parcel.id));
 
   const toggleParcelSelection = (parcelId) => {

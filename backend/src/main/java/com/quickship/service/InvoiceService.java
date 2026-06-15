@@ -39,11 +39,11 @@ public class InvoiceService {
             leftCell.setBorder(Rectangle.NO_BORDER);
             
             // Try loading logo
-            try (InputStream is = getClass().getResourceAsStream("/quickship_logo.png")) {
+            try (InputStream is = getClass().getResourceAsStream("/logo-dark.png")) {
                 if (is != null) {
                     byte[] logoBytes = is.readAllBytes();
                     Image logoImg = Image.getInstance(logoBytes);
-                    logoImg.scaleToFit(80, 80);
+                    logoImg.scaleToFit(140, 56);
                     leftCell.addElement(logoImg);
                 }
             } catch (Exception e) {
@@ -51,12 +51,12 @@ public class InvoiceService {
             }
             
             Font brandFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, primaryColor);
-            Paragraph brandName = new Paragraph("QuickShip", brandFont);
+            Paragraph brandName = new Paragraph("AFRIDEEX", brandFont);
             brandName.setSpacingBefore(5);
             leftCell.addElement(brandName);
             
             Font companyFont = FontFactory.getFont(FontFactory.HELVETICA, 10, darkColor);
-            leftCell.addElement(new Paragraph("QuickShip Logistics S.A.S.\n12 Rue de la Paix, Paris, France\ncontact@quickship.com", companyFont));
+            leftCell.addElement(new Paragraph("AFRIDEEX Logistics\nCasablanca, Maroc\ncontact@afrideex.ma", companyFont));
             headerTable.addCell(leftCell);
 
             // Right Cell: Invoice details
@@ -122,6 +122,7 @@ public class InvoiceService {
             Paragraph destInfo = new Paragraph(
                 "Nom : " + parcel.getRecipientName() + "\n" +
                 "Téléphone : " + parcel.getRecipientPhone() + "\n" +
+                "Ville : " + parcelCity(parcel) + "\n" +
                 "Adresse de livraison : " + parcel.getDeliveryAddress(),
                 infoFont
             );
@@ -224,7 +225,7 @@ public class InvoiceService {
 
             // Footer notes
             document.add(new Paragraph("\n\n\n"));
-            Paragraph terms = new Paragraph("Conditions de livraison standard. Pour toute réclamation, veuillez contacter notre support technique à support@quickship.com.", FontFactory.getFont(FontFactory.HELVETICA, 8, Color.GRAY));
+            Paragraph terms = new Paragraph("Conditions de livraison standard. Pour toute réclamation, veuillez contacter notre support technique à support@afrideex.ma.", FontFactory.getFont(FontFactory.HELVETICA, 8, Color.GRAY));
             terms.setAlignment(Element.ALIGN_CENTER);
             document.add(terms);
 
@@ -234,5 +235,12 @@ public class InvoiceService {
         }
 
         return out.toByteArray();
+    }
+
+    private String parcelCity(Parcel parcel) {
+        if (parcel.getDeliveryCity() != null && !parcel.getDeliveryCity().isBlank()) {
+            return parcel.getDeliveryCity();
+        }
+        return "N/A";
     }
 }

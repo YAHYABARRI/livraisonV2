@@ -1,4 +1,4 @@
-// TypeScript Reference Types for QuickShip Reports & Invoices Module
+// TypeScript Reference Types for AFRIDEEX Reports Module
 
 export enum ParcelStatus {
   CREATED = 'CREATED',
@@ -33,6 +33,7 @@ export interface Parcel {
   recipientPhone: string;
   pickupAddress: string;
   deliveryAddress: string;
+  deliveryCity?: string;
   weight: number;
   status: ParcelStatus;
   shippingPrice: number;

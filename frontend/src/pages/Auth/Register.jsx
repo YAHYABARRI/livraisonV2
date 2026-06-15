@@ -41,7 +41,7 @@ const Register = () => {
     setError(null);
     try {
       await signup(normalizeRegisterPayload(data));
-      toast.success('Votre compte QuickShip a été créé avec succès. Redirection...');
+      toast.success('Votre compte AFRIDEEX a été créé avec succès. Redirection...');
       setTimeout(() => navigate('/login'), 1600);
     } catch (err) {
       console.error(err);
@@ -59,7 +59,7 @@ const Register = () => {
   return (
     <AuthFrame
       eyebrow="Inscription"
-      title="Créer un espace QuickShip"
+      title="Créer un espace AFRIDEEX"
       description="Choisissez votre rôle et activez un accès à la console de livraison."
       footer={(
         <p className="text-center text-sm font-medium text-slate-500 dark:text-slate-400">

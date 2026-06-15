@@ -36,6 +36,7 @@ const CreateParcel = () => {
     resolver: zodResolver(parcelSchema),
     defaultValues: {
       description: '',
+      deliveryCity: '',
       weight: '',
     },
   });
@@ -53,7 +54,10 @@ const CreateParcel = () => {
       }, 1600);
     } catch (err) {
       console.error(err);
-      const errMsg = err.response?.data?.message || "Une erreur est survenue lors de l'enregistrement du colis.";
+      const fieldErrors = err.response?.data?.errors;
+      const errMsg = fieldErrors && typeof fieldErrors === 'object'
+        ? Object.values(fieldErrors).join(' ')
+        : err.response?.data?.message || "Une erreur est survenue lors de l'enregistrement du colis.";
       setError(errMsg);
       toast.error(errMsg);
     }
@@ -211,6 +215,23 @@ const CreateParcel = () => {
                       />
                     </div>
                     <FieldError error={errors.deliveryAddress} />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label htmlFor="deliveryCity" className="text-sm font-extrabold text-slate-700 dark:text-slate-300">
+                      Ville de livraison
+                    </label>
+                    <div className="relative">
+                      <MapPin size={18} className="absolute left-3 top-3.5 text-slate-400" />
+                      <input
+                        id="deliveryCity"
+                        type="text"
+                        placeholder="Casablanca"
+                        className={`input-premium pl-10 ${errors.deliveryCity ? 'border-red-400' : ''}`}
+                        {...register('deliveryCity')}
+                      />
+                    </div>
+                    <FieldError error={errors.deliveryCity} />
                   </div>
                 </div>
               </section>

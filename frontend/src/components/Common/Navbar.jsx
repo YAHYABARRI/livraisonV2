@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Bell,
-  Box,
   Check,
   LogOut,
   Moon,
@@ -12,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { notificationService } from '../../services/api';
+import BrandLogo from './BrandLogo';
 
 const getRoleLabel = (roles = []) => {
   if (roles.some((role) => role.includes('ADMIN'))) return 'Administrateur';
@@ -77,13 +77,8 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/88 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/86">
       <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6">
-        <Link to={isAuthenticated ? '/dashboard' : '/'} className="group flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-premium bg-slate-950 text-white shadow-lg shadow-slate-900/10 transition-transform duration-200 group-hover:-translate-y-0.5 dark:bg-white dark:text-slate-950">
-            <Box size={21} />
-          </span>
-          <span className="text-xl font-black tracking-normal text-slate-950 dark:text-white">
-            Quick<span className="text-primary-600">Ship</span>
-          </span>
+        <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex shrink-0 items-center">
+          <BrandLogo variant="auto" />
         </Link>
 
         {!isAuthenticated && (

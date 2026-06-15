@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Mail, Phone, Search, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, KeyRound, Mail, Phone, Search, Users, X } from 'lucide-react';
 import Layout from '../../components/Common/Layout';
 import EmptyState from '../../components/Common/EmptyState';
 import { SkeletonTable } from '../../components/Common/Skeleton';
@@ -24,6 +24,9 @@ const AdminUsers = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
+  const [resetTarget, setResetTarget] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [resetting, setResetting] = useState(false);
   const pageSize = 7;
 
   useEffect(() => {
@@ -54,6 +57,39 @@ const AdminUsers = () => {
   });
   const totalPages = Math.ceil(filteredUsers.length / pageSize);
   const paginatedUsers = filteredUsers.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+
+  const openResetModal = (user) => {
+    setResetTarget(user);
+    setNewPassword('');
+  };
+
+  const closeResetModal = () => {
+    if (resetting) return;
+    setResetTarget(null);
+    setNewPassword('');
+  };
+
+  const handleResetPassword = async (event) => {
+    event.preventDefault();
+    if (!resetTarget) return;
+    if (newPassword.trim().length < 6) {
+      toast.error('Le mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
+
+    setResetting(true);
+    try {
+      await adminService.resetUserPassword(resetTarget.id, newPassword.trim());
+      toast.success(`Mot de passe réinitialisé pour ${resetTarget.email}.`);
+      setResetTarget(null);
+      setNewPassword('');
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Impossible de réinitialiser le mot de passe.');
+    } finally {
+      setResetting(false);
+    }
+  };
 
   return (
     <Layout>
@@ -98,6 +134,7 @@ const AdminUsers = () => {
                       <th>Email</th>
                       <th>Téléphone</th>
                       <th>Type de compte</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -121,6 +158,16 @@ const AdminUsers = () => {
                           <span className="flex items-center gap-2"><Phone size={14} />{u.phone || 'Non renseigné'}</span>
                         </td>
                         <td>{getRoleBadge(u.roles)}</td>
+                        <td>
+                          <button
+                            onClick={() => openResetModal(u)}
+                            className="btn-premium-secondary px-3 py-2 text-xs"
+                            type="button"
+                          >
+                            <KeyRound size={14} />
+                            Reset
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -138,6 +185,66 @@ const AdminUsers = () => {
               </div>
             )}
           </section>
+        )}
+
+        {resetTarget && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <button
+              className="absolute inset-0 cursor-default bg-slate-950/55 backdrop-blur-sm"
+              onClick={closeResetModal}
+              aria-label="Fermer"
+              type="button"
+            />
+            <form onSubmit={handleResetPassword} className="surface relative w-full max-w-md overflow-hidden animate-scale-up">
+              <div className="flex items-start justify-between border-b border-slate-100 p-5 dark:border-slate-800">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">
+                    Admin reset
+                  </p>
+                  <h2 className="mt-1 text-xl font-black text-slate-950 dark:text-white">
+                    Réinitialiser le mot de passe
+                  </h2>
+                  <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+                    {resetTarget.firstName} {resetTarget.lastName} · {resetTarget.email}
+                  </p>
+                </div>
+                <button onClick={closeResetModal} className="icon-button h-9 w-9" type="button" aria-label="Fermer">
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="space-y-4 p-5">
+                <label className="block">
+                  <span className="mb-2 block text-xs font-black uppercase tracking-wider text-slate-500">
+                    Nouveau mot de passe temporaire
+                  </span>
+                  <input
+                    type="text"
+                    className="input-premium"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Ex: Afrideex@2026"
+                    minLength={6}
+                    autoFocus
+                    required
+                  />
+                </label>
+                <p className="rounded-premium border border-amber-200 bg-amber-50 p-3 text-xs font-semibold leading-5 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-200">
+                  Communiquez ce mot de passe à l’utilisateur. Il pourra ensuite le modifier depuis son profil.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/50">
+                <button onClick={closeResetModal} className="btn-premium-ghost" type="button" disabled={resetting}>
+                  Annuler
+                </button>
+                <button className="btn-premium-primary" type="submit" disabled={resetting}>
+                  <KeyRound size={15} />
+                  {resetting ? 'Réinitialisation...' : 'Réinitialiser'}
+                </button>
+              </div>
+            </form>
+          </div>
         )}
       </div>
     </Layout>

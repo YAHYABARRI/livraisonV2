@@ -59,6 +59,7 @@ public interface ParcelRepository extends JpaRepository<Parcel, Long>, JpaSpecif
            "(:search IS NULL OR :search = '' OR " +
            "LOWER(p.trackingId) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(p.recipientName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(p.deliveryCity) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(p.deliveryAddress) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Parcel> searchClientParcels(@Param("clientId") Long clientId, @Param("search") String search, Pageable pageable);
 
@@ -67,6 +68,7 @@ public interface ParcelRepository extends JpaRepository<Parcel, Long>, JpaSpecif
            "LOWER(p.recipientName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(p.client.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(p.client.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(p.deliveryCity) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(p.deliveryAddress) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Parcel> searchAllParcels(@Param("search") String search, Pageable pageable);
 }

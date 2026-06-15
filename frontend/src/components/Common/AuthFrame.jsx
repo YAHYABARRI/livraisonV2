@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Box, CheckCircle2, Route, ShieldCheck, Truck } from 'lucide-react';
+import { CheckCircle2, Route, ShieldCheck, Truck } from 'lucide-react';
+import BrandLogo from './BrandLogo';
 
 const AuthFrame = ({ eyebrow, title, description, children, footer }) => (
   <div className="min-h-screen bg-slate-950 text-white">
@@ -12,11 +13,8 @@ const AuthFrame = ({ eyebrow, title, description, children, footer }) => (
           backgroundSize: 'cover',
         }}
       >
-        <Link to="/" className="flex w-fit items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-premium bg-white text-slate-950">
-            <Box size={21} />
-          </span>
-          <span className="text-xl font-black">Quick<span className="text-primary-300">Ship</span></span>
+        <Link to="/" className="flex w-fit items-center">
+          <BrandLogo variant="light" />
         </Link>
 
         <div className="max-w-xl">
@@ -49,11 +47,8 @@ const AuthFrame = ({ eyebrow, title, description, children, footer }) => (
 
       <main className="flex min-h-screen items-center justify-center bg-neutralBg px-4 py-10 text-slate-950 dark:bg-darkBg dark:text-white sm:px-6">
         <div className="w-full max-w-xl">
-          <Link to="/" className="mb-8 flex w-fit items-center gap-3 lg:hidden">
-            <span className="flex h-10 w-10 items-center justify-center rounded-premium bg-slate-950 text-white dark:bg-white dark:text-slate-950">
-              <Box size={21} />
-            </span>
-            <span className="text-xl font-black">Quick<span className="text-primary-600">Ship</span></span>
+          <Link to="/" className="mb-8 flex w-fit items-center lg:hidden">
+            <BrandLogo variant="auto" />
           </Link>
 
           <div className="surface overflow-hidden">
