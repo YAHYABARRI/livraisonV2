@@ -33,5 +33,5 @@ public class RegisterRequest {
     private String phone;
 
     @NotBlank(message = "Le rôle est requis")
-    private String role; // CLIENT, DRIVER, ADMIN
+    private String role; // CLIENT, DRIVER
 }

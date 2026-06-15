@@ -29,7 +29,7 @@ export const registerSchema = z.object({
     .trim()
     .min(10, 'Le numéro de téléphone doit faire au moins 10 chiffres')
     .max(20, 'Le numéro est trop long'),
-  role: z.enum(['CLIENT', 'DRIVER', 'ADMIN'], {
+  role: z.enum(['CLIENT', 'DRIVER'], {
     errorMap: () => ({ message: 'Veuillez sélectionner un rôle valide' }),
   }),
 });

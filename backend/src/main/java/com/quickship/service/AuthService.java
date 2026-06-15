@@ -50,7 +50,11 @@ public class AuthService {
         try {
             roleType = RoleType.valueOf(request.getRole().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Rôle invalide. Choisissez entre CLIENT, DRIVER ou ADMIN");
+            throw new BadRequestException("Rôle invalide. Choisissez entre CLIENT ou DRIVER");
+        }
+
+        if (roleType == RoleType.ADMIN) {
+            throw new BadRequestException("La création d'un compte administrateur est réservée au compte interne AFRIDEEX");
         }
 
         Role role = roleRepository.findByName(roleType)

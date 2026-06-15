@@ -25,3 +25,9 @@ quickship:
   jwt:
     secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
     expiration-ms: 86400000 # 24 heures
+  admin:
+    email: ${APP_ADMIN_EMAIL:admin@afrideex.ma}
+    password: ${APP_ADMIN_PASSWORD:Afrideex@2026}
+    first-name: ${APP_ADMIN_FIRST_NAME:AFRIDEEX}
+    last-name: ${APP_ADMIN_LAST_NAME:Admin}
+    phone: ${APP_ADMIN_PHONE:0600000000}

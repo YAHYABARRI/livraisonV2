@@ -28,6 +28,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/quickship?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: quickship
       SPRING_DATASOURCE_PASSWORD: quickship
+      APP_ADMIN_EMAIL: admin@afrideex.ma
+      APP_ADMIN_PASSWORD: Afrideex@2026
+      APP_ADMIN_FIRST_NAME: AFRIDEEX
+      APP_ADMIN_LAST_NAME: Admin
+      APP_ADMIN_PHONE: "0600000000"
     depends_on:
       db:
         condition: service_healthy

@@ -27,7 +27,7 @@ const normalizeRegisterPayload = (data) => ({
 const Register = () => {
   usePageMeta({
     title: `Créer un compte - ${BRAND.name}`,
-    description: 'Créez un compte client, livreur ou admin pour accéder à la console de livraison AFRIDEEX.',
+    description: 'Créez un compte client ou livreur pour accéder à la console de livraison AFRIDEEX.',
     path: '/register',
   });
 
@@ -67,7 +67,7 @@ const Register = () => {
     <AuthFrame
       eyebrow="Inscription"
       title="Créer un espace AFRIDEEX"
-      description="Choisissez votre rôle et activez un accès à la console de livraison."
+      description="Créez un accès client ou livreur. L'accès administrateur est réservé au compte interne AFRIDEEX."
       footer={(
         <p className="text-center text-sm font-medium text-slate-500 dark:text-slate-400">
           Vous avez déjà un compte ?{' '}
@@ -152,9 +152,11 @@ const Register = () => {
           <select id="role" className={`input-premium ${errors.role ? 'border-red-400' : ''}`} {...register('role')}>
             <option value="CLIENT">Client expéditeur</option>
             <option value="DRIVER">Livreur</option>
-            <option value="ADMIN">Administrateur</option>
           </select>
           <FieldError error={errors.role} />
+          <p className="text-xs font-semibold text-slate-400">
+            Les comptes administrateurs ne sont pas créés depuis l'inscription publique.
+          </p>
         </div>
 
         <button type="submit" disabled={isSubmitting} className="btn-premium-primary w-full">

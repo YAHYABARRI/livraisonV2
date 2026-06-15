@@ -3,6 +3,7 @@ package com.quickship.config;
 import com.quickship.entity.*;
 import com.quickship.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,21 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Value("${quickship.admin.email}")
+    private String adminEmail;
+
+    @Value("${quickship.admin.password}")
+    private String adminPassword;
+
+    @Value("${quickship.admin.first-name}")
+    private String adminFirstName;
+
+    @Value("${quickship.admin.last-name}")
+    private String adminLastName;
+
+    @Value("${quickship.admin.phone}")
+    private String adminPhone;
 
     @Override
     public void run(String... args) throws Exception {
@@ -63,6 +79,8 @@ public class DatabaseSeeder implements CommandLineRunner {
             seedUsersAndParcels();
         }
 
+        ensureSingleAdminUser();
+
         // Backfill legacy parcels on startup
         backfillLegacyParcels();
     }
@@ -80,11 +98,11 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         // 1. Seed Users
         User admin = User.builder()
-                .email("admin@quickship.com")
-                .password(passwordEncoder.encode("admin123"))
-                .firstName("Sarah")
-                .lastName("Martin")
-                .phone("0601020304")
+                .email(adminEmail)
+                .password(passwordEncoder.encode(adminPassword))
+                .firstName(adminFirstName)
+                .lastName(adminLastName)
+                .phone(adminPhone)
                 .roles(new HashSet<>(Collections.singletonList(adminRole)))
                 .build();
         userRepository.save(admin);
@@ -213,6 +231,36 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .description("Colis livré en main propre à Emma Petit.")
                 .parcel(parcel3)
                 .build());
+    }
+
+    private void ensureSingleAdminUser() {
+        Role adminRole = roleRepository.findByName(RoleType.ADMIN).orElseGet(() -> roleRepository.save(new Role(null, RoleType.ADMIN)));
+        Role clientRole = roleRepository.findByName(RoleType.CLIENT).orElseGet(() -> roleRepository.save(new Role(null, RoleType.CLIENT)));
+
+        User admin = userRepository.findByEmail(adminEmail)
+                .orElseGet(() -> {
+                    java.util.List<User> existingAdmins = userRepository.findByRoleType(RoleType.ADMIN);
+                    return existingAdmins.isEmpty() ? new User() : existingAdmins.get(0);
+                });
+
+        admin.setEmail(adminEmail);
+        admin.setPassword(passwordEncoder.encode(adminPassword));
+        admin.setFirstName(adminFirstName);
+        admin.setLastName(adminLastName);
+        admin.setPhone(adminPhone);
+        admin.setRoles(new HashSet<>(Collections.singletonList(adminRole)));
+        User savedAdmin = userRepository.save(admin);
+
+        for (User user : userRepository.findByRoleType(RoleType.ADMIN)) {
+            if (user.getId() != null && user.getId().equals(savedAdmin.getId())) {
+                continue;
+            }
+            user.getRoles().removeIf(role -> role.getName() == RoleType.ADMIN);
+            if (user.getRoles().isEmpty()) {
+                user.getRoles().add(clientRole);
+            }
+            userRepository.save(user);
+        }
     }
 
     private void backfillLegacyParcels() {
