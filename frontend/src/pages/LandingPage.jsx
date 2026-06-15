@@ -181,7 +181,7 @@ const LandingPage = () => {
       >
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-neutralBg to-transparent dark:from-darkBg" />
 
-        <div className="relative mx-auto grid max-w-7xl gap-8 pt-8 lg:grid-cols-[minmax(0,1fr)_31rem] lg:items-center">
+        <div className="relative mx-auto max-w-7xl pt-8">
           <div className="max-w-3xl">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -278,41 +278,6 @@ const LandingPage = () => {
               ))}
             </div>
           </div>
-
-          <motion.aside
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.12 }}
-            className="rounded-premium border border-white/20 bg-white/94 p-4 text-slate-950 shadow-premium-xl backdrop-blur-xl dark:bg-slate-950/92 dark:text-white"
-          >
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Tour de contrôle</p>
-                <h2 className="mt-1 text-xl font-black">Opérations live</h2>
-              </div>
-              <StatusBadge status="IN_TRANSIT" />
-            </div>
-
-            <div className="mt-4">
-              <ProgressRoute status="IN_TRANSIT" fromLabel="Hub" toLabel="Client" />
-            </div>
-
-            <div className="mt-4 space-y-2">
-              {[
-                ['Casablanca', 'Rabat', 'OUT_FOR_DELIVERY'],
-                ['Marrakech', 'Agadir', 'ARRIVED_AT_HUB'],
-                ['Tanger', 'Fès', 'DELIVERED'],
-              ].map(([from, to, status]) => (
-                <div key={`${from}-${to}`} className="flex items-center justify-between gap-3 rounded-premium border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
-                  <div>
-                    <p className="text-sm font-black text-slate-950 dark:text-white">{from} → {to}</p>
-                    <p className="mt-0.5 text-xs font-semibold text-slate-400">Réseau national</p>
-                  </div>
-                  <StatusBadge status={status} compact />
-                </div>
-              ))}
-            </div>
-          </motion.aside>
         </div>
       </section>
 
