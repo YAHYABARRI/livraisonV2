@@ -80,9 +80,7 @@ const MoroccoCoverageMap = () => (
         loading="lazy"
       />
       <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-primary-200/50 dark:ring-white/10" />
-      <div className="absolute left-4 top-4 rounded-full border border-white/70 bg-white/88 px-3 py-1 text-xs font-black text-slate-850 shadow-sm backdrop-blur">
-        Couverture Maroc
-      </div>
+      
     </div>
   </div>
 );
