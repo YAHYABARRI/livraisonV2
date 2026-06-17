@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ArrowRight,
   Download,
@@ -70,21 +70,6 @@ const workflow = [
   ['04', 'Livrer', 'La livraison se termine avec un statut clair pour le vendeur et le client.'],
 ];
 
-const faqs = [
-  {
-    q: 'Quels sont vos délais de livraison ?',
-    a: 'Les livraisons sont généralement réalisées sous 24h à 72h selon la ville, la tournée et le statut opérationnel.',
-  },
-  {
-    q: "Comment suivre l'acheminement de mon colis ?",
-    a: 'Saisissez le numéro de suivi AFRIDEEX dans le tracking public. Les informations viennent directement de l’API colis.',
-  },
-  {
-    q: 'Le tableau des tarifs couvre quelles villes ?',
-    a: 'La grille affiche Casablanca et ses regions, avec les frais de livraison visibles immediatement.',
-  },
-];
-
 const MoroccoCoverageMap = () => (
   <div className="group relative overflow-hidden rounded-premium border border-slate-200 bg-white p-2 shadow-premium-xl dark:border-slate-800 dark:bg-slate-950">
     <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
@@ -113,7 +98,6 @@ const LandingPage = () => {
   const [trackedParcel, setTrackedParcel] = useState(null);
   const [trackingError, setTrackingError] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
-  const [openFaq, setOpenFaq] = useState(0);
   const [rateSearch, setRateSearch] = useState('');
   const [selectedCity, setSelectedCity] = useState('ALL');
   const [ratePage, setRatePage] = useState(1);
@@ -574,39 +558,6 @@ const LandingPage = () => {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mb-8 text-center">
-          <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">FAQ</p>
-          <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white">Questions fréquentes</h2>
-        </div>
-        <div className="space-y-3">
-          {faqs.map((faq, index) => (
-            <div key={faq.q} className="surface overflow-hidden">
-              <button
-                onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
-                className="flex w-full items-center justify-between gap-4 p-5 text-left font-black text-slate-950 dark:text-white"
-                type="button"
-              >
-                {faq.q}
-                <span className="text-primary-700">{openFaq === index ? '-' : '+'}</span>
-              </button>
-              <AnimatePresence>
-                {openFaq === index && (
-                  <motion.p
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden border-t border-slate-100 px-5 py-4 text-sm leading-7 text-slate-500 dark:border-slate-800 dark:text-slate-400"
-                  >
-                    {faq.a}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
         </div>
       </section>
 
