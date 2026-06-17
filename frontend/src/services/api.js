@@ -110,6 +110,25 @@ export const notificationService = {
   }
 };
 
+// Endpoints Tarifs publics / Admin
+export const rateService = {
+  getAll: async () => {
+    const response = await api.get('/rates');
+    return response.data;
+  },
+  create: async (rateData) => {
+    const response = await api.post('/admin/rates', rateData);
+    return response.data;
+  },
+  update: async (id, rateData) => {
+    const response = await api.put(`/admin/rates/${id}`, rateData);
+    return response.data;
+  },
+  delete: async (id) => {
+    await api.delete(`/admin/rates/${id}`);
+  },
+};
+
 // Endpoints Livreur
 export const driverService = {
   getAssignedParcels: async () => {

@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import {
   FileText,
   LayoutDashboard,
+  MapPin,
   Package,
   PackagePlus,
   ShieldCheck,
@@ -34,6 +35,7 @@ export const getNavigationLinks = ({ isClient, isDriver, isAdmin }) => {
       { path: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
       { path: '/admin/users', label: 'Utilisateurs', icon: Users },
       { path: '/admin/parcels', label: 'Gestion colis', icon: Package },
+      { path: '/admin/rates', label: 'Tarifs', icon: MapPin },
       { path: '/admin/reports', label: 'Rapports', icon: FileText },
       { path: '/profile', label: 'Profil', icon: User },
     ];

@@ -29,6 +29,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     private DeliveryLogRepository deliveryLogRepository;
 
     @Autowired
+    private DeliveryRateRepository deliveryRateRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -83,6 +86,8 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
 
         ensureSingleAdminUser();
+
+        seedDeliveryRates();
 
         // Backfill legacy parcels on startup
         backfillLegacyParcels();
@@ -274,6 +279,29 @@ public class DatabaseSeeder implements CommandLineRunner {
             throw new IllegalStateException("APP_ADMIN_PASSWORD or APP_ADMIN_PASSWORD_HASH must be configured");
         }
         return passwordEncoder.encode(adminPassword);
+    }
+
+    private void seedDeliveryRates() {
+        if (deliveryRateRepository.count() > 0) {
+            return;
+        }
+
+        java.util.List<String> casablancaZones = java.util.List.of(
+                "Casablanca",
+                "Deroua",
+                "Errahma",
+                "Mediouna",
+                "Mohammedia",
+                "Nouaceur"
+        );
+
+        for (String city : casablancaZones) {
+            deliveryRateRepository.save(DeliveryRate.builder()
+                    .city(city)
+                    .deliveryFee(16.0)
+                    .returnFee(0.0)
+                    .build());
+        }
     }
 
     private void backfillLegacyParcels() {

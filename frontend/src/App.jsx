@@ -16,6 +16,7 @@ const TrackParcel = lazy(() => import('./pages/TrackParcel'));
 const AdminUsers = lazy(() => import('./pages/Admin/AdminUsers'));
 const AdminParcels = lazy(() => import('./pages/Admin/AdminParcels'));
 const AdminReports = lazy(() => import('./pages/Admin/AdminReports'));
+const AdminRates = lazy(() => import('./pages/Admin/AdminRates'));
 const DriverParcels = lazy(() => import('./pages/Driver/DriverParcels'));
 
 const normalizeRole = (role) => role.replace('ROLE_', '');
@@ -110,6 +111,14 @@ function App() {
                   element={(
                     <ProtectedRoute allowedRoles={['ADMIN']}>
                       <AdminParcels />
+                    </ProtectedRoute>
+                  )}
+                />
+                <Route
+                  path="/admin/rates"
+                  element={(
+                    <ProtectedRoute allowedRoles={['ADMIN']}>
+                      <AdminRates />
                     </ProtectedRoute>
                   )}
                 />

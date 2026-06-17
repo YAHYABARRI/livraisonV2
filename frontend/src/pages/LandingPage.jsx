@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowRight,
-  BarChart3,
   Download,
   MapPin,
   MessageCircle,
@@ -12,8 +11,6 @@ import {
   ShieldCheck,
   Sparkles,
   Truck,
-  Users,
-  Warehouse,
   X,
 } from 'lucide-react';
 import Navbar from '../components/Common/Navbar';
@@ -25,7 +22,7 @@ import heroLogistics from '../assets/landing-hero-logistics.webp';
 import hubOperationsPhoto from '../assets/landing-hub-operations.webp';
 import lastMilePhoto from '../assets/landing-last-mile.webp';
 import moroccoDeliveryMap from '../assets/morocco-delivery-map.webp';
-import { parcelService } from '../services/api';
+import { parcelService, rateService } from '../services/api';
 import { getApiErrorMessage } from '../utils/apiError';
 import {
   ProgressRoute,
@@ -38,7 +35,7 @@ const formatDirham = (value) => `${Number(value || 0).toFixed(2)} DH`;
 const RATES_PER_PAGE = 8;
 
 const heroStats = [
-  ['405', 'zones couvertes'],
+  ['6', 'zones Casablanca'],
   ['24-72h', 'délais moyens'],
   ['COD', 'paiement livraison'],
 ];
@@ -51,26 +48,26 @@ const services = [
   },
   {
     icon: Truck,
-    title: 'Suivi opérationnel',
-    text: 'Tracking public et privé connecté aux statuts réels renvoyés par le backend.',
+    title: 'Suivi colis clair',
+    text: 'Chaque expedition reste tracable avec un numero de suivi simple a partager avec vos clients.',
   },
   {
-    icon: Warehouse,
-    title: 'Pilotage admin',
-    text: 'Assignation livreur, gestion colis, tickets imprimables et rapports PDF depuis une console dense.',
+    icon: ShieldCheck,
+    title: 'Livraison securisee',
+    text: 'Vos colis sont suivis de la creation jusqu a la livraison avec des statuts lisibles et rassurants.',
   },
   {
     icon: Download,
-    title: 'Documents prêts terrain',
-    text: 'Tickets et rapports conçus pour l’impression et l’exploitation quotidienne.',
+    title: 'Tickets prets a imprimer',
+    text: 'Generez des tickets propres pour preparer vos commandes et accelerer vos expeditions.',
   },
 ];
 
 const workflow = [
   ['01', 'Créer', 'Le client enregistre le colis et la destination.'],
-  ['02', 'Attribuer', 'L’admin affecte un livreur disponible.'],
-  ['03', 'Acheminer', 'Les statuts terrain alimentent le suivi en temps réel.'],
-  ['04', 'Livrer', 'La livraison clôture le colis et les documents restent disponibles.'],
+  ['02', 'Preparer', 'Le ticket est pret a imprimer pour identifier clairement le colis.'],
+  ['03', 'Suivre', 'Le numero de suivi permet de consulter l avancement a tout moment.'],
+  ['04', 'Livrer', 'La livraison se termine avec un statut clair pour le vendeur et le client.'],
 ];
 
 const faqs = [
@@ -84,7 +81,7 @@ const faqs = [
   },
   {
     q: 'Le tableau des tarifs couvre quelles villes ?',
-    a: 'La grille affiche les villes et zones disponibles, avec frais de livraison et frais de retour quand ils existent.',
+    a: 'La grille affiche Casablanca et ses regions, avec les frais de livraison visibles immediatement.',
   },
 ];
 
@@ -108,7 +105,7 @@ const MoroccoCoverageMap = () => (
 const LandingPage = () => {
   usePageMeta({
     title: `${BRAND.name} - Livraison e-commerce au Maroc`,
-    description: 'Livraison e-commerce au Maroc avec suivi colis réel, tarifs par ville, tickets imprimables et tableaux de bord.',
+    description: 'Livraison e-commerce au Maroc avec suivi colis reel, tarifs par ville et tickets imprimables pour les vendeurs.',
     path: '/',
   });
 
@@ -120,15 +117,49 @@ const LandingPage = () => {
   const [rateSearch, setRateSearch] = useState('');
   const [selectedCity, setSelectedCity] = useState('ALL');
   const [ratePage, setRatePage] = useState(1);
+  const [rates, setRates] = useState(foxDeliveryRates);
+  const [ratesLoading, setRatesLoading] = useState(true);
+  const [ratesError, setRatesError] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchRates = async () => {
+      setRatesLoading(true);
+      setRatesError(null);
+      try {
+        const data = await rateService.getAll();
+        if (mounted) {
+          setRates(Array.isArray(data) && data.length > 0 ? data : []);
+        }
+      } catch (err) {
+        console.error(err);
+        if (mounted) {
+          setRates(foxDeliveryRates);
+          setRatesError('Tarifs API indisponibles. Affichage de la grille Casablanca par defaut.');
+        }
+      } finally {
+        if (mounted) {
+          setRatesLoading(false);
+        }
+      }
+    };
+
+    fetchRates();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const filteredRates = useMemo(() => {
     const term = rateSearch.trim().toLowerCase();
-    return foxDeliveryRates.filter((rate) => {
+    return rates.filter((rate) => {
       const matchesSearch = rate.city.toLowerCase().includes(term);
       const matchesCity = selectedCity === 'ALL' || rate.city === selectedCity;
       return matchesSearch && matchesCity;
     });
-  }, [rateSearch, selectedCity]);
+  }, [rateSearch, rates, selectedCity]);
 
   const totalRatePages = Math.max(1, Math.ceil(filteredRates.length / RATES_PER_PAGE));
   const currentRatePage = Math.min(ratePage, totalRatePages);
@@ -207,7 +238,7 @@ const LandingPage = () => {
               transition={{ delay: 0.09 }}
               className="mt-5 max-w-2xl text-lg font-medium leading-8 text-slate-200"
             >
-              AFRIDEEX centralise la création, le suivi, les tickets, les livreurs et les rapports pour les vendeurs e-commerce marocains.
+              AFRIDEEX simplifie l envoi de vos colis e-commerce avec creation rapide, suivi clair, tarifs transparents et tickets imprimables.
             </motion.p>
 
             <motion.form
@@ -306,11 +337,11 @@ const LandingPage = () => {
             <div>
               <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">Expérience terrain</p>
               <h2 className="mt-3 max-w-3xl text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">
-                Une interface qui parle aux vendeurs, aux admins et aux livreurs.
+                Une interface pensee pour les vendeurs e-commerce et leurs clients.
               </h2>
             </div>
             <p className="max-w-lg text-sm leading-7 text-slate-500 dark:text-slate-400">
-              Les écrans priorisent les actions utiles : créer un colis, suivre un statut, imprimer un ticket et piloter les tournées.
+              Les ecrans priorisent les actions utiles : creer un colis, verifier un tarif, suivre une expedition et imprimer un ticket.
             </p>
           </div>
 
@@ -321,7 +352,7 @@ const LandingPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/88 via-slate-950/22 to-transparent" />
                 <figcaption className="absolute inset-x-0 bottom-0 p-6 text-white">
                   <h3 className="text-2xl font-black">Dernier kilomètre maîtrisé</h3>
-                  <p className="mt-2 max-w-lg text-sm font-medium leading-6 text-slate-200">Une expérience claire pour le client final et exploitable par les équipes terrain.</p>
+                  <p className="mt-2 max-w-lg text-sm font-medium leading-6 text-slate-200">Une experience claire pour rassurer le client final a chaque etape.</p>
                 </figcaption>
               </div>
             </figure>
@@ -362,7 +393,7 @@ const LandingPage = () => {
             <p className="text-xs font-black uppercase tracking-wider text-primary-700 dark:text-primary-300">Tarifs Maroc</p>
             <h2 className="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">Tableau des tarifs par ville.</h2>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500 dark:text-slate-400">
-              Le tableau reste central : recherchez une ville, filtrez une destination et consultez les frais de livraison et de retour.
+              Le tableau reste central : recherchez une ville de Casablanca et ses regions, puis consultez les frais de livraison.
             </p>
           </div>
           <div className="surface p-3">
@@ -379,7 +410,7 @@ const LandingPage = () => {
               </div>
               <select className="input-premium" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} aria-label="Filtrer les tarifs par destination">
                 <option value="ALL">Toutes destinations</option>
-                {foxDeliveryRates.map((rate) => <option key={rate.city} value={rate.city}>{rate.city}</option>)}
+                {rates.map((rate) => <option key={rate.city} value={rate.city}>{rate.city}</option>)}
               </select>
             </div>
           </div>
@@ -392,14 +423,20 @@ const LandingPage = () => {
                 <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Grille tarifaire</p>
                 <h3 className="mt-1 text-xl font-black text-slate-950 dark:text-white">Destinations disponibles</h3>
                 <p className="mt-1 text-xs font-semibold text-slate-400">
-                  Données publiques foxlivraison.ma, consolidées le {new Date(foxRatesMeta.scrapedAt).toLocaleDateString('fr-FR')}.
+                  Tarifs AFRIDEEX Casablanca, mise a jour {new Date(foxRatesMeta.updatedAt).toLocaleDateString('fr-FR')}.
                 </p>
               </div>
               <span className="inline-flex w-fit items-center gap-2 rounded-full bg-secondary-50 px-3 py-1 text-xs font-black text-secondary-700 dark:bg-secondary-950/40 dark:text-secondary-300">
                 <MapPin size={13} />
-                {filteredRates.length} / {foxRatesMeta.uniqueCities} affichée{filteredRates.length > 1 ? 's' : ''}
+                {filteredRates.length} / {rates.length || foxRatesMeta.uniqueCities} affichee{filteredRates.length > 1 ? 's' : ''}
               </span>
             </div>
+
+            {ratesError && (
+              <div className="border-b border-amber-200 bg-amber-50 px-5 py-3 text-xs font-bold text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-200">
+                {ratesError}
+              </div>
+            )}
 
             <div className="max-h-[44rem] overflow-auto overscroll-contain">
               <table className="w-full min-w-[39rem] border-separate border-spacing-0 text-left">
@@ -411,7 +448,11 @@ const LandingPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {filteredRates.length === 0 ? (
+                  {ratesLoading ? (
+                    <tr>
+                      <td colSpan="3" className="p-8 text-center text-sm font-semibold text-slate-400">Chargement des tarifs...</td>
+                    </tr>
+                  ) : filteredRates.length === 0 ? (
                     <tr>
                       <td colSpan="3" className="p-8 text-center text-sm font-semibold text-slate-400">Aucun tarif ne correspond à vos critères.</td>
                     </tr>
@@ -510,18 +551,18 @@ const LandingPage = () => {
       <section className="bg-slate-950 px-4 py-20 text-white sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.78fr_1.22fr]">
           <div>
-            <p className="text-xs font-black uppercase tracking-wider text-primary-300">Plateforme complète</p>
-            <h2 className="mt-3 text-3xl font-black sm:text-4xl">Une interface faite pour l’exploitation quotidienne.</h2>
+            <p className="text-xs font-black uppercase tracking-wider text-primary-300">Espace vendeur</p>
+            <h2 className="mt-3 text-3xl font-black sm:text-4xl">Tout pour envoyer vos colis sans friction.</h2>
             <p className="mt-4 text-sm leading-7 text-slate-300">
-              L’expérience reste connectée à vos APIs existantes : auth, dashboard, suivi, tickets et rapports.
+              Creez vos expeditions, consultez vos tarifs, suivez vos colis et preparez vos tickets depuis une experience claire.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {[
-              { icon: Truck, value: 'Livraison', label: 'Tracking temps réel' },
-              { icon: Users, value: 'Clients', label: 'Espace vendeur sécurisé' },
-              { icon: BarChart3, value: 'Admin', label: 'Pilotage et rapports' },
-              { icon: ShieldCheck, value: 'Livreur', label: 'Statuts et téléphone client' },
+              { icon: Truck, value: 'Suivi', label: 'Tracking colis en temps reel' },
+              { icon: PackageCheck, value: 'Commandes', label: 'Creation colis rapide' },
+              { icon: Download, value: 'Tickets', label: 'Preparation imprimable' },
+              { icon: ShieldCheck, value: 'Confiance', label: 'Statuts clairs pour le client' },
             ].map((item) => {
               const Icon = item.icon;
               return (
@@ -572,8 +613,8 @@ const LandingPage = () => {
       <section className="px-4 pb-20 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 rounded-premium bg-primary-600 p-8 text-white shadow-premium-xl lg:flex-row lg:items-center">
           <div>
-            <h2 className="text-3xl font-black">Prêt à piloter vos expéditions ?</h2>
-            <p className="mt-2 max-w-2xl text-sm font-medium text-blue-50">Créez un compte et accédez à la console AFRIDEEX.</p>
+            <h2 className="text-3xl font-black">Pret a envoyer vos colis ?</h2>
+            <p className="mt-2 max-w-2xl text-sm font-medium text-blue-50">Creez un compte vendeur et commencez a preparer vos expeditions.</p>
           </div>
           <Link to="/register" className="btn-premium-primary bg-white text-slate-950 hover:bg-blue-50">
             Démarrer

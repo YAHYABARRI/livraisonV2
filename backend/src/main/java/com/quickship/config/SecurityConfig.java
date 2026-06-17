@@ -57,6 +57,7 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 // Autoriser l'accès aux APIs selon les rôles
                 .requestMatchers("/api/parcels/track/**").permitAll()
+                .requestMatchers("/api/rates/**").permitAll()
                 .requestMatchers("/api/tickets/**").hasAnyAuthority("ADMIN", "CLIENT")
                 .requestMatchers("/api/parcels/**").hasAuthority("CLIENT")
                 .requestMatchers("/api/driver/**").hasAuthority("DRIVER")
