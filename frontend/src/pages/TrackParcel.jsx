@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   AlertCircle,
@@ -43,7 +43,7 @@ const TrackParcel = () => {
 
   usePageMeta({
     title: `Suivi colis - ${BRAND.name}`,
-    description: 'Suivez un colis AFRIDEEX en temps réel avec statut, trajet, destinataire et timeline logistique.',
+    description: 'Suivez un colis GLADEX DELIVERY en temps réel avec statut, trajet, destinataire et timeline logistique.',
     path: trackingNumber ? `/track/${trackingNumber}` : '/track',
   });
 
@@ -104,7 +104,7 @@ const TrackParcel = () => {
           eyebrow="Tracking"
           icon={Package}
           title="Suivi d'expédition en temps réel"
-          description="Consultez l'avancement, les informations logistiques et les événements de transport d'un colis AFRIDEEX."
+          description="Consultez l'avancement, les informations logistiques et les événements de transport d'un colis GLADEX DELIVERY."
         />
 
         <section className="surface overflow-hidden">

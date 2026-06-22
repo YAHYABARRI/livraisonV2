@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -56,7 +56,7 @@ const parcelCity = (parcel) => parcel.deliveryCity || extractCity(parcel.deliver
 const AdminParcels = () => {
   usePageMeta({
     title: `Gestion colis - ${BRAND.name}`,
-    description: 'Interface admin AFRIDEEX pour gérer colis, filtres, livreurs et tickets de livraison.',
+    description: 'Interface admin GLADEX DELIVERY pour gérer colis, filtres, livreurs et tickets de livraison.',
     path: '/admin/parcels',
   });
 
@@ -149,7 +149,7 @@ const AdminParcels = () => {
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(parcels, null, 2))}`;
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', 'global_colis_afrideex.json');
+      downloadAnchor.setAttribute('download', 'global_colis_gladexdelivery.json');
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();

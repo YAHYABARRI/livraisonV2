@@ -54,7 +54,7 @@ public class AuthService {
         }
 
         if (roleType == RoleType.ADMIN) {
-            throw new BadRequestException("La création d'un compte administrateur est réservée au compte interne AFRIDEEX");
+            throw new BadRequestException("La création d'un compte administrateur est réservée au compte interne GLADEX DELIVERY");
         }
 
         Role role = roleRepository.findByName(roleType)

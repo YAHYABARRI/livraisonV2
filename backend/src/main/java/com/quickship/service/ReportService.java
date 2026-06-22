@@ -274,7 +274,7 @@ public class ReportService {
             addHeaderRow(info, "T\u00e9l\u00e9phone du livreur", driverPhone, labelFont, valueFont);
             addHeaderRow(info, "Nombre de colis", String.valueOf(parcelCount), labelFont, valueFont);
             addHeaderRow(info, "Date", docDate, labelFont, valueFont);
-            addHeaderRow(info, "Livreur Agence", "AFRIDEEX Agence", labelFont, valueFont);
+            addHeaderRow(info, "Livreur Agence", "GLADEX DELIVERY Agence", labelFont, valueFont);
 
             PdfPCell infoCell = new PdfPCell(info);
             infoCell.setBorder(Rectangle.NO_BORDER);

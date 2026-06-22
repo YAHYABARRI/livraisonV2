@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, KeyRound, Mail, Phone, Search, Users, X } from 'lucide-react';
 import Layout from '../../components/Common/Layout';
 import EmptyState from '../../components/Common/EmptyState';
@@ -22,7 +22,7 @@ const getRoleBadge = (roles = []) => {
 const AdminUsers = () => {
   usePageMeta({
     title: `Utilisateurs - ${BRAND.name}`,
-    description: 'Gérez les utilisateurs AFRIDEEX et la réinitialisation de mot de passe par admin.',
+    description: 'Gérez les utilisateurs GLADEX DELIVERY et la réinitialisation de mot de passe par admin.',
     path: '/admin/users',
   });
 
@@ -231,7 +231,7 @@ const AdminUsers = () => {
                     className="input-premium"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Ex: Afrideex@2026"
+                    placeholder="Ex: GladexDelivery@2026"
                     minLength={6}
                     autoFocus
                     required

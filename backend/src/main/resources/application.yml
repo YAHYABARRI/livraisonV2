@@ -1,4 +1,4 @@
-server:
+﻿server:
   port: ${PORT:8080}
   error:
     include-message: always
@@ -29,7 +29,7 @@ quickship:
     email: ${APP_ADMIN_EMAIL}
     password: ${APP_ADMIN_PASSWORD:}
     password-hash: ${APP_ADMIN_PASSWORD_HASH:}
-    first-name: ${APP_ADMIN_FIRST_NAME:AFRIDEEX}
+    first-name: ${APP_ADMIN_FIRST_NAME:GLADEX DELIVERY}
     last-name: ${APP_ADMIN_LAST_NAME:Admin}
     phone: ${APP_ADMIN_PHONE:0600000000}
 

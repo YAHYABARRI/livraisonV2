@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import {
   CheckCircle2,
   ChevronLeft,
@@ -56,7 +56,7 @@ const ClientPhoneLink = ({ parcel, className = 'mt-1 text-xs' }) => {
 const DriverParcels = () => {
   usePageMeta({
     title: `Courses livreur - ${BRAND.name}`,
-    description: 'Espace livreur AFRIDEEX pour consulter les colis assignés et mettre à jour les statuts.',
+    description: 'Espace livreur GLADEX DELIVERY pour consulter les colis assignés et mettre à jour les statuts.',
     path: '/driver/parcels',
   });
 
@@ -128,7 +128,7 @@ const DriverParcels = () => {
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(parcels, null, 2))}`;
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', 'mes_courses_afrideex.json');
+      downloadAnchor.setAttribute('download', 'mes_courses_gladexdelivery.json');
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();

@@ -51,12 +51,12 @@ public class InvoiceService {
             }
             
             Font brandFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, primaryColor);
-            Paragraph brandName = new Paragraph("AFRIDEEX", brandFont);
+            Paragraph brandName = new Paragraph("GLADEX DELIVERY", brandFont);
             brandName.setSpacingBefore(5);
             leftCell.addElement(brandName);
             
             Font companyFont = FontFactory.getFont(FontFactory.HELVETICA, 10, darkColor);
-            leftCell.addElement(new Paragraph("AFRIDEEX Logistics\nCasablanca, Maroc\ncontact@afrideex.ma", companyFont));
+            leftCell.addElement(new Paragraph("GLADEX DELIVERY Logistics\nCasablanca, Maroc\ncontact@gladexdelivery.ma", companyFont));
             headerTable.addCell(leftCell);
 
             // Right Cell: Invoice details
@@ -225,7 +225,7 @@ public class InvoiceService {
 
             // Footer notes
             document.add(new Paragraph("\n\n\n"));
-            Paragraph terms = new Paragraph("Conditions de livraison standard. Pour toute réclamation, veuillez contacter notre support technique à support@afrideex.ma.", FontFactory.getFont(FontFactory.HELVETICA, 8, Color.GRAY));
+            Paragraph terms = new Paragraph("Conditions de livraison standard. Pour toute réclamation, veuillez contacter notre support technique à support@gladexdelivery.ma.", FontFactory.getFont(FontFactory.HELVETICA, 8, Color.GRAY));
             terms.setAlignment(Element.ALIGN_CENTER);
             document.add(terms);
 

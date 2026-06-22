@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -75,7 +75,7 @@ const MoroccoCoverageMap = () => (
     <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
       <img
         src={moroccoDeliveryMap}
-        alt="Carte de livraison AFRIDEEX au Maroc"
+        alt="Carte de livraison GLADEX DELIVERY au Maroc"
         className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.025]"
         loading="lazy"
       />
@@ -220,7 +220,7 @@ const LandingPage = () => {
               transition={{ delay: 0.09 }}
               className="mt-5 max-w-2xl text-lg font-medium leading-8 text-slate-200"
             >
-              AFRIDEEX simplifie l envoi de vos colis e-commerce avec creation rapide, suivi clair, tarifs transparents et tickets imprimables.
+              GLADEX DELIVERY simplifie l envoi de vos colis e-commerce avec creation rapide, suivi clair, tarifs transparents et tickets imprimables.
             </motion.p>
 
             <motion.form
@@ -342,7 +342,7 @@ const LandingPage = () => {
             <div className="grid gap-5">
               <figure className="group overflow-hidden rounded-premium border border-slate-200 bg-slate-950 shadow-premium-lg dark:border-slate-800">
                 <div className="relative aspect-[16/9] overflow-hidden">
-                  <img src={hubOperationsPhoto} alt="Hub logistique AFRIDEEX" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                  <img src={hubOperationsPhoto} alt="Hub logistique GLADEX DELIVERY" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/86 via-slate-950/16 to-transparent" />
                   <figcaption className="absolute inset-x-0 bottom-0 p-5 text-white">
                     <h3 className="text-xl font-black">Hub et tri opérationnel</h3>
@@ -405,7 +405,7 @@ const LandingPage = () => {
                 <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Grille tarifaire</p>
                 <h3 className="mt-1 text-xl font-black text-slate-950 dark:text-white">Destinations disponibles</h3>
                 <p className="mt-1 text-xs font-semibold text-slate-400">
-                  Tarifs AFRIDEEX Casablanca, mise a jour {new Date(foxRatesMeta.updatedAt).toLocaleDateString('fr-FR')}.
+                  Tarifs GLADEX DELIVERY Casablanca, mise a jour {new Date(foxRatesMeta.updatedAt).toLocaleDateString('fr-FR')}.
                 </p>
               </div>
               <span className="inline-flex w-fit items-center gap-2 rounded-full bg-secondary-50 px-3 py-1 text-xs font-black text-secondary-700 dark:bg-secondary-950/40 dark:text-secondary-300">
@@ -575,7 +575,7 @@ const LandingPage = () => {
       <footer className="border-t border-slate-200 bg-white px-4 py-10 dark:border-slate-800 dark:bg-slate-950 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <BrandLogo variant="auto" />
-          <p className="text-xs font-medium text-slate-400">© {new Date().getFullYear()} AFRIDEEX. Tous droits réservés.</p>
+          <p className="text-xs font-medium text-slate-400">© {new Date().getFullYear()} GLADEX DELIVERY. Tous droits réservés.</p>
           <div className="flex gap-5 text-xs font-bold text-slate-500">
             <a href="#services" className="hover:text-primary-700">Services</a>
             <a href="#pricing" className="hover:text-primary-700">Tarifs</a>

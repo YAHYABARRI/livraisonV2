@@ -1,4 +1,4 @@
-import logoBlueBg from '../../assets/logo-blue-bg.png';
+﻿import logoBlueBg from '../../assets/logo-blue-bg.png';
 import logoDark from '../../assets/logo-dark.png';
 import logoLight from '../../assets/logo-light.png';
 
@@ -16,14 +16,14 @@ const BrandLogo = ({ variant = 'auto', className = '' }) => {
       <>
         <img
           src={logoDark}
-          alt="AFRIDEEX logo"
+          alt="GLADEX DELIVERY logo"
           className={`${baseClassName} dark:hidden ${className}`}
           width="160"
           height="64"
         />
         <img
           src={logoLight}
-          alt="AFRIDEEX logo"
+          alt="GLADEX DELIVERY logo"
           className={`${baseClassName} hidden dark:block ${className}`}
           width="160"
           height="64"
@@ -35,7 +35,7 @@ const BrandLogo = ({ variant = 'auto', className = '' }) => {
   return (
     <img
       src={VARIANTS[variant] || logoDark}
-      alt="AFRIDEEX logo"
+      alt="GLADEX DELIVERY logo"
       className={`${baseClassName} ${className}`}
       width="160"
       height="64"

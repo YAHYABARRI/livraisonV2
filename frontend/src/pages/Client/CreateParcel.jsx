@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +28,7 @@ const FieldError = ({ error }) => (
 const CreateParcel = () => {
   usePageMeta({
     title: `Créer un colis - ${BRAND.name}`,
-    description: 'Créez une nouvelle expédition AFRIDEEX avec destinataire, colis, ville et adresse de livraison.',
+    description: 'Créez une nouvelle expédition GLADEX DELIVERY avec destinataire, colis, ville et adresse de livraison.',
     path: '/create-parcel',
   });
 

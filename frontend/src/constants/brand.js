@@ -1,5 +1,5 @@
-export const BRAND = {
-  name: 'AFRIDEEX',
+﻿export const BRAND = {
+  name: 'GLADEX DELIVERY',
   domain: 'livraision.netlify.app',
   website: 'https://livraision.netlify.app',
   whatsapp: '',

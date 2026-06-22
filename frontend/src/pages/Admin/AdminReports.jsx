@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import {
   Calendar,
   CheckCircle2,
@@ -26,7 +26,7 @@ import { formatCurrency, PageHeader, SectionHeader, StatCard } from '../../compo
 const AdminReports = () => {
   usePageMeta({
     title: `Rapports admin - ${BRAND.name}`,
-    description: 'Générez les rapports PDF AFRIDEEX par date, livreur, client et période.',
+    description: 'Générez les rapports PDF GLADEX DELIVERY par date, livreur, client et période.',
     path: '/admin/reports',
   });
 

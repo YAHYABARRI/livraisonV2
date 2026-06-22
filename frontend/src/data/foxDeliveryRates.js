@@ -1,5 +1,5 @@
-export const foxRatesMeta = {
-  source: 'AFRIDEEX',
+﻿export const foxRatesMeta = {
+  source: 'GLADEX DELIVERY',
   updatedAt: '2026-06-17',
   uniqueCities: 6,
 };

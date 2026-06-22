@@ -1,4 +1,4 @@
-// TypeScript Reference Types for AFRIDEEX Reports Module
+﻿// TypeScript Reference Types for GLADEX DELIVERY Reports Module
 
 export enum ParcelStatus {
   CREATED = 'CREATED',

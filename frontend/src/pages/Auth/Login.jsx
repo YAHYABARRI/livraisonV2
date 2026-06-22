@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -14,7 +14,7 @@ import { loginSchema } from '../../utils/validators';
 const Login = () => {
   usePageMeta({
     title: `Connexion - ${BRAND.name}`,
-    description: 'Connectez-vous à votre espace AFRIDEEX pour suivre les colis, tickets et rapports.',
+    description: 'Connectez-vous à votre espace GLADEX DELIVERY pour suivre les colis, tickets et rapports.',
     path: '/login',
   });
 
@@ -55,7 +55,7 @@ const Login = () => {
     <AuthFrame
       eyebrow="Connexion"
       title="Accéder à la console"
-      description="Retrouvez vos colis, tournées, rapports et actions prioritaires dans votre espace AFRIDEEX."
+      description="Retrouvez vos colis, tournées, rapports et actions prioritaires dans votre espace GLADEX DELIVERY."
       footer={(
         <p className="text-center text-sm font-medium text-slate-500 dark:text-slate-400">
           Vous n'avez pas de compte ?{' '}

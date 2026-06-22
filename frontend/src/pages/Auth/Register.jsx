@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
@@ -27,7 +27,7 @@ const normalizeRegisterPayload = (data) => ({
 const Register = () => {
   usePageMeta({
     title: `Créer un compte - ${BRAND.name}`,
-    description: 'Créez un compte client ou livreur pour accéder à la console de livraison AFRIDEEX.',
+    description: 'Créez un compte client ou livreur pour accéder à la console de livraison GLADEX DELIVERY.',
     path: '/register',
   });
 
@@ -50,7 +50,7 @@ const Register = () => {
     setError(null);
     try {
       await signup(normalizeRegisterPayload(data));
-      toast.success('Votre compte AFRIDEEX a été créé avec succès. Redirection...');
+      toast.success('Votre compte GLADEX DELIVERY a été créé avec succès. Redirection...');
       setTimeout(() => navigate('/login'), 1600);
     } catch (err) {
       console.error(err);
@@ -66,8 +66,8 @@ const Register = () => {
   return (
     <AuthFrame
       eyebrow="Inscription"
-      title="Créer un espace AFRIDEEX"
-      description="Créez un accès client ou livreur. L'accès administrateur est réservé au compte interne AFRIDEEX."
+      title="Créer un espace GLADEX DELIVERY"
+      description="Créez un accès client ou livreur. L'accès administrateur est réservé au compte interne GLADEX DELIVERY."
       footer={(
         <p className="text-center text-sm font-medium text-slate-500 dark:text-slate-400">
           Vous avez déjà un compte ?{' '}

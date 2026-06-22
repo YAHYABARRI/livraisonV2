@@ -35,8 +35,8 @@ import java.util.List;
 @Service
 public class DeliveryTicketService {
 
-    private static final String COMPANY_NAME = "AFRIDEEX";
-    private static final String COMPANY_WEBSITE = "www.afrideex.ma";
+    private static final String COMPANY_NAME = "GLADEX DELIVERY";
+    private static final String COMPANY_WEBSITE = "www.gladexdelivery.ma";
     private static final String COMPANY_PHONE = "+212 701 212 524";
     private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 

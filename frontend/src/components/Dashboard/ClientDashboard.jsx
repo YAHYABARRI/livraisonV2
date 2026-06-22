@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -121,7 +121,7 @@ const ClientDashboard = () => {
           <div className="border-b border-slate-100 p-5 dark:border-slate-800">
             <SectionHeader
               title="Suivi express"
-              description="Entrez un numéro AFRIDEEX pour ouvrir le tracking temps réel."
+              description="Entrez un numéro GLADEX DELIVERY pour ouvrir le tracking temps réel."
               action={latestParcel && <StatusBadge status={latestParcel.status} />}
             />
           </div>

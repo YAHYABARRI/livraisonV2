@@ -1,4 +1,4 @@
-import { useAuth } from '../context/AuthContext';
+﻿import { useAuth } from '../context/AuthContext';
 import Layout from '../components/Common/Layout';
 import LoadingScreen from '../components/Common/LoadingScreen';
 import ClientDashboard from '../components/Dashboard/ClientDashboard';
@@ -10,7 +10,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 const Dashboard = () => {
   usePageMeta({
     title: `Dashboard - ${BRAND.name}`,
-    description: 'Tableau de bord AFRIDEEX pour piloter colis, statuts, livreurs, rapports et opérations de livraison.',
+    description: 'Tableau de bord GLADEX DELIVERY pour piloter colis, statuts, livreurs, rapports et opérations de livraison.',
     path: '/dashboard',
   });
 

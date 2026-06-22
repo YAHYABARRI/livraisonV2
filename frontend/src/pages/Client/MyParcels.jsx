@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
@@ -50,7 +50,7 @@ const todayIso = () => new Date().toISOString().split('T')[0];
 const MyParcels = () => {
   usePageMeta({
     title: `Mes colis - ${BRAND.name}`,
-    description: 'Consultez, filtrez et imprimez les tickets de vos colis AFRIDEEX.',
+    description: 'Consultez, filtrez et imprimez les tickets de vos colis GLADEX DELIVERY.',
     path: '/my-parcels',
   });
 
@@ -105,7 +105,7 @@ const MyParcels = () => {
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(parcels, null, 2))}`;
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', 'mes_colis_afrideex.json');
+      downloadAnchor.setAttribute('download', 'mes_colis_gladexdelivery.json');
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();

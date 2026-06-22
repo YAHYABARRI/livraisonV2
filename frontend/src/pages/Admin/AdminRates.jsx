@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Banknote, MapPin, Pencil, Plus, Save, Search, Trash2, X } from 'lucide-react';
 import Layout from '../../components/Common/Layout';
 import EmptyState from '../../components/Common/EmptyState';
@@ -14,7 +14,7 @@ const formatDirham = (value) => `${Number(value || 0).toFixed(2)} DH`;
 const AdminRates = () => {
   usePageMeta({
     title: `Tarifs - ${BRAND.name}`,
-    description: 'Gestion admin des villes et prix de livraison AFRIDEEX.',
+    description: 'Gestion admin des villes et prix de livraison GLADEX DELIVERY.',
     path: '/admin/rates',
   });
 

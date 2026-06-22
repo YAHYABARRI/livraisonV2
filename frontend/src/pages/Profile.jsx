@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Edit3, Loader2, Mail, Phone, Save, Shield, User, X } from 'lucide-react';
 import Layout from '../components/Common/Layout';
 import { BRAND } from '../constants/brand';
@@ -17,7 +17,7 @@ const getRoleLabel = (roles = []) => {
 const Profile = () => {
   usePageMeta({
     title: `Profil - ${BRAND.name}`,
-    description: 'Gérez vos informations de compte AFRIDEEX utilisées pour les expéditions, notifications et opérations.',
+    description: 'Gérez vos informations de compte GLADEX DELIVERY utilisées pour les expéditions, notifications et opérations.',
     path: '/profile',
   });
 
