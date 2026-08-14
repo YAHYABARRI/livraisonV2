@@ -72,8 +72,8 @@ public class DeliveryTicketService {
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);
         List<Parcel> parcels = isAdmin(userPrincipal)
-                ? parcelRepository.findCreatedOrStatusLoggedBetween(start, end, ParcelStatus.ACCEPTED)
-                : parcelRepository.findClientCreatedOrStatusLoggedBetween(userPrincipal.getId(), start, end, ParcelStatus.ACCEPTED);
+                ? parcelRepository.findCreatedOrStatusLoggedBetween(start, end, ParcelStatus.WAITING_PICKUP)
+                : parcelRepository.findClientCreatedOrStatusLoggedBetween(userPrincipal.getId(), start, end, ParcelStatus.WAITING_PICKUP);
 
         if (parcels.isEmpty()) {
             throw new BadRequestException("Aucune commande trouvée pour cette date");

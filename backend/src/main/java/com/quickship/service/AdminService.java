@@ -79,12 +79,12 @@ public class AdminService {
         }
 
         parcel.setDriver(driver);
-        parcel.setStatus(ParcelStatus.ACCEPTED);
+        parcel.setStatus(ParcelStatus.WAITING_PICKUP);
         Parcel savedParcel = parcelRepository.save(parcel);
 
         DeliveryLog log = DeliveryLog.builder()
-                .status(ParcelStatus.ACCEPTED)
-                .description("Le colis a été attribué au livreur : " + driver.getFirstName() + " " + driver.getLastName())
+                .status(ParcelStatus.WAITING_PICKUP)
+                .description("Le colis a été attribué au livreur et reste en attente de ramassage : " + driver.getFirstName() + " " + driver.getLastName())
                 .parcel(savedParcel)
                 .build();
         deliveryLogRepository.save(log);
@@ -105,15 +105,15 @@ public class AdminService {
                 .count();
 
         long pendingParcels = parcels.stream()
-                .filter(p -> p.getStatus() == ParcelStatus.CREATED)
+                .filter(p -> p.getStatus() == ParcelStatus.WAITING_PICKUP)
                 .count();
 
         long activeParcels = parcels.stream()
-                .filter(p -> p.getStatus() == ParcelStatus.ACCEPTED 
-                        || p.getStatus() == ParcelStatus.PICKED_UP 
-                        || p.getStatus() == ParcelStatus.IN_TRANSIT
-                        || p.getStatus() == ParcelStatus.ARRIVED_AT_HUB
-                        || p.getStatus() == ParcelStatus.OUT_FOR_DELIVERY)
+                .filter(p -> p.getStatus() == ParcelStatus.WAITING_PICKUP
+                        || p.getStatus() == ParcelStatus.PICKED_UP
+                        || p.getStatus() == ParcelStatus.IN_EXPEDITION
+                        || p.getStatus() == ParcelStatus.SECOND_CALL
+                        || p.getStatus() == ParcelStatus.UNREACHABLE)
                 .count();
 
         long deliveredParcels = parcels.stream()

@@ -31,18 +31,13 @@ import {
   ProgressRoute,
   SectionHeader,
   StatusBadge,
+  STATUS_LABELS,
   TrackingTimeline,
 } from '../../components/Common/LogisticsUI';
 
 const statusOptions = [
   ['ALL', 'Tous les statuts'],
-  ['CREATED', 'Créé'],
-  ['ACCEPTED', 'Accepté'],
-  ['PICKED_UP', 'Collecté'],
-  ['IN_TRANSIT', 'En transit'],
-  ['ARRIVED_AT_HUB', 'Centre de tri'],
-  ['OUT_FOR_DELIVERY', 'En livraison'],
-  ['DELIVERED', 'Livré'],
+  ...STATUS_LABELS,
 ];
 
 const todayIso = () => new Date().toISOString().split('T')[0];

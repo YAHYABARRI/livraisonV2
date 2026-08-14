@@ -20,16 +20,11 @@ import { BRAND } from '../../constants/brand';
 import { driverService } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { usePageMeta } from '../../hooks/usePageMeta';
-import { PageHeader, SectionHeader, StatusBadge } from '../../components/Common/LogisticsUI';
+import { PageHeader, SectionHeader, StatusBadge, STATUS_LABELS, isTerminalStatus } from '../../components/Common/LogisticsUI';
 
 const statusOptions = [
   ['ALL', 'Tous les statuts'],
-  ['ACCEPTED', 'Attribué'],
-  ['PICKED_UP', 'Collecté'],
-  ['IN_TRANSIT', 'En transit'],
-  ['ARRIVED_AT_HUB', 'Centre de tri'],
-  ['OUT_FOR_DELIVERY', 'En livraison'],
-  ['DELIVERED', 'Livré'],
+  ...STATUS_LABELS,
 ];
 
 const getClientName = (parcel) => (
@@ -235,7 +230,7 @@ const DriverParcels = () => {
                         <td className="text-sm font-semibold text-slate-650 dark:text-slate-300">{parcel.weight} kg</td>
                         <td><StatusBadge status={parcel.status} /></td>
                         <td className="text-right">
-                          {parcel.status !== 'DELIVERED' ? (
+                          {!isTerminalStatus(parcel.status) ? (
                             <button onClick={() => openUpdateModal(parcel)} className="btn-premium-secondary px-3 py-2 text-xs" type="button">
                               <Edit size={14} />
                               Statut
@@ -293,12 +288,9 @@ const DriverParcels = () => {
                     <div className="space-y-1.5">
                       <label htmlFor="status" className="text-sm font-extrabold text-slate-700 dark:text-slate-300">Nouveau statut</label>
                       <select id="status" className="input-premium" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
-                        <option value="ACCEPTED">Attribué - en attente de collecte</option>
-                        <option value="PICKED_UP">Collecté chez l'expéditeur</option>
-                        <option value="IN_TRANSIT">En transit</option>
-                        <option value="ARRIVED_AT_HUB">Arrivé au centre de tri</option>
-                        <option value="OUT_FOR_DELIVERY">En cours de livraison</option>
-                        <option value="DELIVERED">Livré avec succès</option>
+                        {STATUS_LABELS.map(([value, label]) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
                       </select>
                     </div>
                     <div className="space-y-1.5">

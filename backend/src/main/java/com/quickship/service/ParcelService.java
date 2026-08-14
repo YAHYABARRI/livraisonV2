@@ -50,7 +50,7 @@ public class ParcelService {
                 .deliveryCity(request.getDeliveryCity())
                 .description(request.getDescription())
                 .weight(request.getWeight())
-                .status(ParcelStatus.CREATED)
+                .status(ParcelStatus.WAITING_PICKUP)
                 .estimatedDelivery(request.getEstimatedDelivery() != null ? request.getEstimatedDelivery() : LocalDateTime.now().plusDays(2))
                 .client(client)
                 .build();
@@ -58,8 +58,8 @@ public class ParcelService {
         Parcel savedParcel = parcelRepository.save(parcel);
 
         DeliveryLog initialLog = DeliveryLog.builder()
-                .status(ParcelStatus.CREATED)
-                .description("Colis enregistré avec succès. En attente de traitement.")
+                .status(ParcelStatus.WAITING_PICKUP)
+                .description("Colis enregistré avec succès. En attente de ramassage.")
                 .parcel(savedParcel)
                 .build();
         deliveryLogRepository.save(initialLog);

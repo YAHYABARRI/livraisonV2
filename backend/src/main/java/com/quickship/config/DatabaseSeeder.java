@@ -69,10 +69,12 @@ public class DatabaseSeeder implements CommandLineRunner {
             System.err.println("Note: Could not alter delivery_logs status column (may already be VARCHAR): " + e.getMessage());
         }
         try {
-            jdbcTemplate.execute("UPDATE parcels SET status = 'CREATED' WHERE status = 'PENDING'");
-            jdbcTemplate.execute("UPDATE parcels SET status = 'ACCEPTED' WHERE status = 'ASSIGNED'");
-            jdbcTemplate.execute("UPDATE delivery_logs SET status = 'CREATED' WHERE status = 'PENDING'");
-            jdbcTemplate.execute("UPDATE delivery_logs SET status = 'ACCEPTED' WHERE status = 'ASSIGNED'");
+            jdbcTemplate.execute("UPDATE parcels SET status = 'WAITING_PICKUP' WHERE status IN ('PENDING', 'ASSIGNED', 'CREATED', 'ACCEPTED')");
+            jdbcTemplate.execute("UPDATE parcels SET status = 'IN_EXPEDITION' WHERE status IN ('IN_TRANSIT', 'ARRIVED_AT_HUB', 'OUT_FOR_DELIVERY')");
+            jdbcTemplate.execute("UPDATE parcels SET status = 'RETURN_TO_CLIENT' WHERE status = 'RETURNED'");
+            jdbcTemplate.execute("UPDATE delivery_logs SET status = 'WAITING_PICKUP' WHERE status IN ('PENDING', 'ASSIGNED', 'CREATED', 'ACCEPTED')");
+            jdbcTemplate.execute("UPDATE delivery_logs SET status = 'IN_EXPEDITION' WHERE status IN ('IN_TRANSIT', 'ARRIVED_AT_HUB', 'OUT_FOR_DELIVERY')");
+            jdbcTemplate.execute("UPDATE delivery_logs SET status = 'RETURN_TO_CLIENT' WHERE status = 'RETURNED'");
         } catch (Exception e) {
             System.err.println("Legacy status update failed: " + e.getMessage());
         }
@@ -137,7 +139,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         // 2. Seed Parcels for Alice Dubois
         
-        // Parcel 1: CREATED
+        // Parcel 1: WAITING_PICKUP
         Parcel parcel1 = Parcel.builder()
                 .trackingNumber("QS-2026-MARKLAUR4982")
                 .recipientName("Marc Laurent")
@@ -147,19 +149,19 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .deliveryCity("Paris")
                 .description("Documents professionnels importants")
                 .weight(1.2)
-                .status(ParcelStatus.CREATED)
+                .status(ParcelStatus.WAITING_PICKUP)
                 .estimatedDelivery(LocalDateTime.now().plusDays(2))
                 .client(client)
                 .build();
         parcelRepository.save(parcel1);
 
         deliveryLogRepository.save(DeliveryLog.builder()
-                .status(ParcelStatus.CREATED)
-                .description("Colis enregistré. En attente de traitement.")
+                .status(ParcelStatus.WAITING_PICKUP)
+                .description("Colis enregistré. En attente de ramassage.")
                 .parcel(parcel1)
                 .build());
 
-        // Parcel 2: ACCEPTED / IN TRANSIT
+        // Parcel 2: PICKED_UP / IN_EXPEDITION
         Parcel parcel2 = Parcel.builder()
                 .trackingNumber("QS-2026-THOMBERN7549")
                 .recipientName("Thomas Bernard")
@@ -169,7 +171,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .deliveryCity("Lyon")
                 .description("Ordinateur portable de remplacement")
                 .weight(3.5)
-                .status(ParcelStatus.IN_TRANSIT)
+                .status(ParcelStatus.IN_EXPEDITION)
                 .estimatedDelivery(LocalDateTime.now().plusDays(1))
                 .client(client)
                 .driver(driver)
@@ -177,13 +179,13 @@ public class DatabaseSeeder implements CommandLineRunner {
         parcelRepository.save(parcel2);
 
         deliveryLogRepository.save(DeliveryLog.builder()
-                .status(ParcelStatus.CREATED)
+                .status(ParcelStatus.WAITING_PICKUP)
                 .description("Colis enregistré.")
                 .parcel(parcel2)
                 .build());
         deliveryLogRepository.save(DeliveryLog.builder()
-                .status(ParcelStatus.ACCEPTED)
-                .description("Colis attribué à Jean Dupont.")
+                .status(ParcelStatus.WAITING_PICKUP)
+                .description("Colis attribué à Jean Dupont. En attente de ramassage.")
                 .parcel(parcel2)
                 .build());
         deliveryLogRepository.save(DeliveryLog.builder()
@@ -192,8 +194,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .parcel(parcel2)
                 .build());
         deliveryLogRepository.save(DeliveryLog.builder()
-                .status(ParcelStatus.IN_TRANSIT)
-                .description("Colis en cours d'acheminement vers Lyon.")
+                .status(ParcelStatus.IN_EXPEDITION)
+                .description("Colis en cours d'expédition vers Lyon.")
                 .parcel(parcel2)
                 .build());
 
@@ -215,13 +217,13 @@ public class DatabaseSeeder implements CommandLineRunner {
         parcelRepository.save(parcel3);
 
         deliveryLogRepository.save(DeliveryLog.builder()
-                .status(ParcelStatus.CREATED)
+                .status(ParcelStatus.WAITING_PICKUP)
                 .description("Colis enregistré.")
                 .parcel(parcel3)
                 .build());
         deliveryLogRepository.save(DeliveryLog.builder()
-                .status(ParcelStatus.ACCEPTED)
-                .description("Colis attribué à Jean Dupont.")
+                .status(ParcelStatus.WAITING_PICKUP)
+                .description("Colis attribué à Jean Dupont. En attente de ramassage.")
                 .parcel(parcel3)
                 .build());
         deliveryLogRepository.save(DeliveryLog.builder()
@@ -230,8 +232,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .parcel(parcel3)
                 .build());
         deliveryLogRepository.save(DeliveryLog.builder()
-                .status(ParcelStatus.IN_TRANSIT)
-                .description("Colis en transit.")
+                .status(ParcelStatus.IN_EXPEDITION)
+                .description("Colis en cours d'expédition.")
                 .parcel(parcel3)
                 .build());
         deliveryLogRepository.save(DeliveryLog.builder()

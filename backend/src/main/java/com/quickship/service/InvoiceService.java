@@ -4,6 +4,7 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.quickship.entity.Parcel;
+import com.quickship.entity.ParcelStatus;
 import com.quickship.util.QrCodeGenerator;
 import org.springframework.stereotype.Service;
 
@@ -165,7 +166,7 @@ public class InvoiceService {
             c2.setHorizontalAlignment(Element.ALIGN_CENTER);
             detailsTable.addCell(c2);
 
-            PdfPCell c3 = new PdfPCell(new Paragraph(parcel.getStatus().name(), cellFont));
+            PdfPCell c3 = new PdfPCell(new Paragraph(statusLabel(parcel.getStatus()), cellFont));
             c3.setPadding(8);
             c3.setHorizontalAlignment(Element.ALIGN_CENTER);
             detailsTable.addCell(c3);
@@ -242,5 +243,22 @@ public class InvoiceService {
             return parcel.getDeliveryCity();
         }
         return "N/A";
+    }
+
+    private String statusLabel(ParcelStatus status) {
+        if (status == null) {
+            return "N/A";
+        }
+        return switch (status) {
+            case DELIVERED -> "Livré";
+            case IN_EXPEDITION -> "En cours d'expédition";
+            case SECOND_CALL -> "2ème appel";
+            case UNREACHABLE -> "Injoignable";
+            case REFUSED -> "Refusé";
+            case RETURN_TO_CLIENT -> "Retour au client";
+            case RETURN_TO_STOCK -> "Retour au stock";
+            case PICKED_UP -> "Ramassé";
+            case WAITING_PICKUP -> "En attente de ramassage";
+        };
     }
 }

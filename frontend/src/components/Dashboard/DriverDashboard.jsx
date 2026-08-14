@@ -23,6 +23,8 @@ import {
   SectionHeader,
   StatCard,
   StatusBadge,
+  STATUS_LABELS,
+  isTerminalStatus,
 } from '../Common/LogisticsUI';
 
 const getClientName = (parcel) => (
@@ -105,11 +107,11 @@ const DriverDashboard = () => {
 
   const stats = {
     total: parcels.length,
-    assigned: parcels.filter((p) => p.status === 'ACCEPTED').length,
-    active: parcels.filter((p) => ['PICKED_UP', 'IN_TRANSIT', 'ARRIVED_AT_HUB', 'OUT_FOR_DELIVERY'].includes(p.status)).length,
+    assigned: parcels.filter((p) => p.status === 'WAITING_PICKUP').length,
+    active: parcels.filter((p) => !isTerminalStatus(p.status)).length,
     delivered: parcels.filter((p) => p.status === 'DELIVERED').length,
   };
-  const activeParcels = parcels.filter((p) => p.status !== 'DELIVERED');
+  const activeParcels = parcels.filter((p) => !isTerminalStatus(p.status));
   const focusParcel = activeParcels[0];
 
   if (loading) {
@@ -296,12 +298,9 @@ const DriverDashboard = () => {
                       value={selectedStatus}
                       onChange={(e) => setSelectedStatus(e.target.value)}
                     >
-                      <option value="ACCEPTED">Attribué - en attente de collecte</option>
-                      <option value="PICKED_UP">Collecté chez l'expéditeur</option>
-                      <option value="IN_TRANSIT">En transit</option>
-                      <option value="ARRIVED_AT_HUB">Arrivé au centre de tri</option>
-                      <option value="OUT_FOR_DELIVERY">En cours de livraison</option>
-                      <option value="DELIVERED">Livré avec succès</option>
+                      {STATUS_LABELS.map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
                     </select>
                   </div>
 

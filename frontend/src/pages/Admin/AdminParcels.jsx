@@ -29,18 +29,14 @@ import {
   ProgressRoute,
   SectionHeader,
   StatusBadge,
+  STATUS_LABELS,
   TrackingTimeline,
+  isTerminalStatus,
 } from '../../components/Common/LogisticsUI';
 
 const statusOptions = [
   ['ALL', 'Tous les statuts'],
-  ['CREATED', 'Créé'],
-  ['ACCEPTED', 'Accepté'],
-  ['PICKED_UP', 'Collecté'],
-  ['IN_TRANSIT', 'En transit'],
-  ['ARRIVED_AT_HUB', 'Centre de tri'],
-  ['OUT_FOR_DELIVERY', 'En livraison'],
-  ['DELIVERED', 'Livré'],
+  ...STATUS_LABELS,
 ];
 
 const todayIso = () => new Date().toISOString().split('T')[0];
@@ -493,7 +489,7 @@ const AdminParcels = () => {
                         <td>
                           <div className="flex justify-end gap-2">
                             <button onClick={() => setSelectedParcel(parcel)} className="icon-button h-9 w-9" title="Inspecter" type="button"><Eye size={15} /></button>
-                            {parcel.status !== 'DELIVERED' && (
+                            {!isTerminalStatus(parcel.status) && (
                               <button onClick={() => openAssignModal(parcel)} className="icon-button h-9 w-9" title="Attribuer" type="button"><UserPlus size={15} /></button>
                             )}
                           </div>

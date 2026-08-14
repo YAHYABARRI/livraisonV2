@@ -4,53 +4,30 @@ import {
   CheckCircle2,
   PackageCheck,
   PackagePlus,
-  Route,
   Truck,
-  Warehouse,
 } from 'lucide-react';
 
 export const STATUS_FLOW = [
   {
-    key: 'CREATED',
-    label: 'Créé',
-    shortLabel: 'Créé',
+    key: 'WAITING_PICKUP',
+    label: 'En attente de ramassage',
+    shortLabel: 'Attente',
     description: 'Commande enregistrée',
     Icon: PackagePlus,
   },
   {
-    key: 'ACCEPTED',
-    label: 'Accepté',
-    shortLabel: 'Accepté',
-    description: 'Prise en charge validée',
-    Icon: CheckCircle2,
-  },
-  {
     key: 'PICKED_UP',
-    label: 'Collecté',
-    shortLabel: 'Collecté',
-    description: 'Colis récupéré',
+    label: 'Ramassé',
+    shortLabel: 'Ramassé',
+    description: 'Colis ramassé',
     Icon: PackageCheck,
   },
   {
-    key: 'IN_TRANSIT',
-    label: 'En transit',
-    shortLabel: 'Transit',
-    description: 'En route vers le hub',
+    key: 'IN_EXPEDITION',
+    label: "En cours d'expédition",
+    shortLabel: 'Expédition',
+    description: 'En cours de livraison',
     Icon: Truck,
-  },
-  {
-    key: 'ARRIVED_AT_HUB',
-    label: 'Au centre de tri',
-    shortLabel: 'Hub',
-    description: 'Tri régional',
-    Icon: Warehouse,
-  },
-  {
-    key: 'OUT_FOR_DELIVERY',
-    label: 'En livraison',
-    shortLabel: 'Livraison',
-    description: 'Dernier kilomètre',
-    Icon: Route,
   },
   {
     key: 'DELIVERED',
@@ -61,54 +38,90 @@ export const STATUS_FLOW = [
   },
 ];
 
+export const STATUS_LABELS = [
+  ['DELIVERED', 'Livré'],
+  ['IN_EXPEDITION', "En cours d'expédition"],
+  ['SECOND_CALL', '2ème appel'],
+  ['UNREACHABLE', 'Injoignable'],
+  ['REFUSED', 'Refusé'],
+  ['RETURN_TO_CLIENT', 'Retour au client'],
+  ['RETURN_TO_STOCK', 'Retour au stock'],
+  ['PICKED_UP', 'Ramassé'],
+  ['WAITING_PICKUP', 'En attente de ramassage'],
+];
+
+const STATUS_PROGRESS = {
+  WAITING_PICKUP: 16,
+  PICKED_UP: 38,
+  IN_EXPEDITION: 68,
+  SECOND_CALL: 72,
+  UNREACHABLE: 72,
+  REFUSED: 82,
+  RETURN_TO_CLIENT: 88,
+  RETURN_TO_STOCK: 88,
+  DELIVERED: 100,
+};
+
+export const TERMINAL_STATUSES = ['DELIVERED', 'REFUSED', 'RETURN_TO_CLIENT', 'RETURN_TO_STOCK'];
+
+export const isTerminalStatus = (status) => TERMINAL_STATUSES.includes(status);
+
+export const isDeliveredStatus = (status) => status === 'DELIVERED';
+
 export const STATUS_META = {
-  CREATED: {
-    label: 'Créé',
+  WAITING_PICKUP: {
+    label: 'En attente de ramassage',
     tone: 'amber',
     className: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/25 dark:text-amber-300 dark:ring-amber-900/50',
     dot: 'bg-amber-500',
   },
-  ACCEPTED: {
-    label: 'Accepté',
-    tone: 'blue',
-    className: 'bg-primary-50 text-primary-700 ring-primary-200 dark:bg-primary-950/35 dark:text-primary-300 dark:ring-primary-900/60',
-    dot: 'bg-primary-500',
-  },
   PICKED_UP: {
-    label: 'Collecté',
+    label: 'Ramassé',
     tone: 'teal',
     className: 'bg-teal-50 text-teal-700 ring-teal-200 dark:bg-teal-950/30 dark:text-teal-300 dark:ring-teal-900/50',
     dot: 'bg-teal-500',
   },
-  IN_TRANSIT: {
-    label: 'En transit',
+  IN_EXPEDITION: {
+    label: "En cours d'expédition",
     tone: 'blue',
     className: 'bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:ring-blue-900/50',
     dot: 'bg-blue-500',
   },
-  ARRIVED_AT_HUB: {
-    label: 'Centre de tri',
-    tone: 'sky',
-    className: 'bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-950/30 dark:text-sky-300 dark:ring-sky-900/50',
-    dot: 'bg-sky-500',
+  SECOND_CALL: {
+    label: '2ème appel',
+    tone: 'amber',
+    className: 'bg-orange-50 text-orange-700 ring-orange-200 dark:bg-orange-950/30 dark:text-orange-300 dark:ring-orange-900/50',
+    dot: 'bg-orange-500',
   },
-  OUT_FOR_DELIVERY: {
-    label: 'En livraison',
-    tone: 'emerald',
-    className: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:ring-emerald-900/50',
-    dot: 'bg-emerald-500',
+  UNREACHABLE: {
+    label: 'Injoignable',
+    tone: 'rose',
+    className: 'bg-rose-50 text-rose-700 ring-rose-200 dark:bg-rose-950/30 dark:text-rose-300 dark:ring-rose-900/50',
+    dot: 'bg-rose-500',
+  },
+  REFUSED: {
+    label: 'Refusé',
+    tone: 'rose',
+    className: 'bg-red-50 text-red-700 ring-red-200 dark:bg-red-950/30 dark:text-red-300 dark:ring-red-900/50',
+    dot: 'bg-red-500',
+  },
+  RETURN_TO_CLIENT: {
+    label: 'Retour au client',
+    tone: 'slate',
+    className: 'bg-slate-100 text-slate-700 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700',
+    dot: 'bg-slate-500',
+  },
+  RETURN_TO_STOCK: {
+    label: 'Retour au stock',
+    tone: 'slate',
+    className: 'bg-slate-100 text-slate-700 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700',
+    dot: 'bg-slate-500',
   },
   DELIVERED: {
     label: 'Livré',
     tone: 'green',
     className: 'bg-secondary-50 text-secondary-700 ring-secondary-200 dark:bg-secondary-950/35 dark:text-secondary-300 dark:ring-secondary-900/60',
     dot: 'bg-secondary-500',
-  },
-  RETURNED: {
-    label: 'Retourné',
-    tone: 'rose',
-    className: 'bg-rose-50 text-rose-700 ring-rose-200 dark:bg-rose-950/30 dark:text-rose-300 dark:ring-rose-900/50',
-    dot: 'bg-rose-500',
   },
 };
 
@@ -121,9 +134,8 @@ export const getStatusMeta = (status) => (
 );
 
 export const getStatusProgress = (status) => {
-  const index = STATUS_FLOW.findIndex((step) => step.key === status);
-  if (index < 0) return 14;
-  return Math.max(14, Math.round(((index + 1) / STATUS_FLOW.length) * 100));
+  if (STATUS_PROGRESS[status]) return STATUS_PROGRESS[status];
+  return 14;
 };
 
 export const formatCurrency = (value) => `${Number(value || 0).toFixed(2)} DH`;
@@ -249,14 +261,29 @@ export const ProgressRoute = ({ status, fromLabel = 'Collecte', toLabel = 'Livra
 };
 
 export const TrackingTimeline = ({ status, logs = [] }) => {
-  const currentStatusIndex = STATUS_FLOW.findIndex((step) => step.key === status);
+  const meta = getStatusMeta(status);
+  const isBaseStatus = STATUS_FLOW.some((step) => step.key === status);
+  const timelineSteps = isBaseStatus
+    ? STATUS_FLOW
+    : [
+        ...STATUS_FLOW.slice(0, 3),
+        {
+          key: status,
+          label: meta.label,
+          shortLabel: meta.label,
+          description: 'Statut actuel du colis',
+          Icon: AlertCircle,
+        },
+        STATUS_FLOW[3],
+      ];
+  const currentProgress = getStatusProgress(status);
 
   return (
     <div className="relative pl-6">
       <div className="absolute left-2 top-2 bottom-2 w-px bg-slate-200 dark:bg-slate-800" />
       <div className="space-y-5">
-        {STATUS_FLOW.map((step, index) => {
-          const isDone = currentStatusIndex >= index;
+        {timelineSteps.map((step) => {
+          const isDone = currentProgress >= getStatusProgress(step.key);
           const log = logs?.find((entry) => entry.status === step.key);
           const Icon = step.Icon;
 

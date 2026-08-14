@@ -20,6 +20,7 @@ import {
   SectionHeader,
   StatCard,
   StatusBadge,
+  isTerminalStatus,
 } from '../Common/LogisticsUI';
 
 const AdminDashboard = () => {
@@ -171,7 +172,7 @@ const AdminDashboard = () => {
                     </td>
                     <td><StatusBadge status={parcel.status} /></td>
                     <td className="text-right">
-                      {parcel.status !== 'DELIVERED' ? (
+                      {!isTerminalStatus(parcel.status) ? (
                         <button
                           onClick={() => openAssignModal(parcel)}
                           className="btn-premium-secondary px-3 py-2 text-xs"
@@ -236,7 +237,7 @@ const AdminDashboard = () => {
                     >
                       <option value="">Choisir un chauffeur</option>
                       {drivers.map((driver) => {
-                        const activeCount = parcels.filter((p) => p.driver && p.driver.id === driver.id && p.status !== 'DELIVERED').length;
+                        const activeCount = parcels.filter((p) => p.driver && p.driver.id === driver.id && !isTerminalStatus(p.status)).length;
                         return (
                           <option key={driver.id} value={driver.id}>
                             {driver.firstName} {driver.lastName} - {activeCount} livraison(s) active(s)

@@ -49,7 +49,7 @@ public class Parcel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private ParcelStatus status = ParcelStatus.CREATED;
+    private ParcelStatus status = ParcelStatus.WAITING_PICKUP;
 
     @Column(name = "estimated_delivery")
     private LocalDateTime estimatedDelivery;

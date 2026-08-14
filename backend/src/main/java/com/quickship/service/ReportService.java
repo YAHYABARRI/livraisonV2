@@ -53,11 +53,16 @@ public class ReportService {
                 .count();
 
         long pendingCount = parcels.stream()
-                .filter(p -> p.getStatus() != ParcelStatus.DELIVERED && p.getStatus() != ParcelStatus.RETURNED)
+                .filter(p -> p.getStatus() != ParcelStatus.DELIVERED
+                        && p.getStatus() != ParcelStatus.REFUSED
+                        && p.getStatus() != ParcelStatus.RETURN_TO_CLIENT
+                        && p.getStatus() != ParcelStatus.RETURN_TO_STOCK)
                 .count();
 
         long returnedCount = parcels.stream()
-                .filter(p -> p.getStatus() == ParcelStatus.RETURNED)
+                .filter(p -> p.getStatus() == ParcelStatus.REFUSED
+                        || p.getStatus() == ParcelStatus.RETURN_TO_CLIENT
+                        || p.getStatus() == ParcelStatus.RETURN_TO_STOCK)
                 .count();
 
         return ReportStatsResponse.builder()

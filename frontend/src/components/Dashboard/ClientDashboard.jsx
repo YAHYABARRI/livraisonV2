@@ -23,6 +23,7 @@ import {
   SectionHeader,
   StatCard,
   StatusBadge,
+  isTerminalStatus,
 } from '../Common/LogisticsUI';
 
 const ClientDashboard = () => {
@@ -49,7 +50,7 @@ const ClientDashboard = () => {
 
   const stats = (() => {
     const total = parcels.length;
-    const active = parcels.filter((p) => p.status !== 'DELIVERED').length;
+    const active = parcels.filter((p) => !isTerminalStatus(p.status)).length;
     const delivered = parcels.filter((p) => p.status === 'DELIVERED').length;
     const now = new Date();
     const monthlySpending = parcels
@@ -161,7 +162,7 @@ const ClientDashboard = () => {
                 </div>
               )}
             </form>
-            <ProgressRoute status={latestParcel?.status || 'CREATED'} fromLabel="Collecte" toLabel="Destination" />
+            <ProgressRoute status={latestParcel?.status || 'WAITING_PICKUP'} fromLabel="Collecte" toLabel="Destination" />
           </div>
         </section>
 
