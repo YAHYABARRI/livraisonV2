@@ -185,8 +185,9 @@ const LandingPage = () => {
       <Navbar />
 
       <section
-        className="relative isolate overflow-hidden bg-slate-950 px-4 pb-14 pt-10 text-white sm:px-6 lg:px-8 lg:pb-20"
+        className="landing-hero relative isolate overflow-hidden bg-slate-950 px-4 pb-14 pt-10 text-white sm:px-6 lg:px-8 lg:pb-20"
         style={{
+          '--landing-hero-image': `url(${heroLogistics})`,
           backgroundImage: `linear-gradient(90deg, rgba(5,13,28,0.96) 0%, rgba(5,13,28,0.84) 48%, rgba(5,13,28,0.46) 100%), url(${heroLogistics})`,
           backgroundPosition: 'center',
           backgroundSize: 'cover',
@@ -194,7 +195,7 @@ const LandingPage = () => {
       >
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-neutralBg to-transparent dark:from-darkBg" />
 
-        <div className="relative mx-auto max-w-7xl pt-8">
+        <div className="landing-hero-content relative mx-auto max-w-7xl pt-8">
           <div className="max-w-3xl">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -209,7 +210,7 @@ const LandingPage = () => {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.04 }}
-              className="max-w-4xl text-4xl font-black leading-[1.02] tracking-normal sm:text-6xl lg:text-7xl"
+              className="landing-hero-title max-w-4xl text-4xl font-black leading-[1.02] tracking-normal sm:text-6xl lg:text-7xl"
             >
               Pilotez vos colis avec une plateforme logistique premium.
             </motion.h1>
@@ -218,7 +219,7 @@ const LandingPage = () => {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.09 }}
-              className="mt-5 max-w-2xl text-lg font-medium leading-8 text-slate-200"
+              className="landing-hero-description mt-5 max-w-2xl text-lg font-medium leading-8 text-slate-200"
             >
               GLADEX DELIVERY simplifie l envoi de vos colis e-commerce avec creation rapide, suivi clair, tarifs transparents et tickets imprimables.
             </motion.p>
@@ -228,10 +229,10 @@ const LandingPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.14 }}
               onSubmit={handleTrackSubmit}
-              className="mt-8 max-w-2xl rounded-premium border border-white/18 bg-white/12 p-2 shadow-2xl backdrop-blur-xl"
+              className="landing-hero-tracking mt-8 max-w-2xl rounded-premium border border-white/18 bg-white/12 p-2 shadow-2xl backdrop-blur-xl"
             >
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <div className="flex flex-1 items-center gap-3 px-3">
+              <div className="landing-hero-tracking-row flex flex-col gap-2 sm:flex-row">
+                <div className="landing-hero-tracking-field flex flex-1 items-center gap-3 px-3">
                   <Search size={20} className="shrink-0 text-blue-200" />
                   <input
                     type="text"
@@ -262,7 +263,7 @@ const LandingPage = () => {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mt-7 flex flex-wrap items-center gap-3"
+              className="landing-hero-ctas mt-7 flex flex-wrap items-center gap-3"
             >
               <Link to="/register" className="btn-premium-primary bg-primary-600">
                 Créer un compte

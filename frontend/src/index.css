@@ -268,6 +268,79 @@
   animation: soft-pulse 2.2s ease-in-out infinite;
 }
 
+@media (max-width: 767.98px) {
+  .landing-hero {
+    min-height: 100svh;
+    height: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-image:
+      linear-gradient(
+        to bottom,
+        rgba(3, 12, 27, 0.9) 0%,
+        rgba(3, 12, 27, 0.78) 45%,
+        rgba(3, 12, 27, 0.42) 75%,
+        rgba(3, 12, 27, 0.62) 100%
+      ),
+      var(--landing-hero-image) !important;
+    background-position: 78% center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat;
+  }
+
+  .landing-hero-content {
+    width: 100%;
+  }
+
+  .landing-hero-title {
+    width: 100%;
+    max-width: none;
+    font-size: clamp(2.375rem, 10vw, 2.875rem);
+    line-height: 1.05;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+  }
+
+  .landing-hero-description {
+    width: 100%;
+    max-width: none;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .landing-hero-tracking {
+    width: 100%;
+    max-width: none;
+  }
+
+  .landing-hero-tracking-row,
+  .landing-hero-tracking-field {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .landing-hero-tracking-field input {
+    min-width: 0;
+  }
+
+  .landing-hero-ctas > a {
+    min-height: 48px;
+  }
+}
+
+@media (max-width: 479.98px) {
+  .landing-hero-ctas {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .landing-hero-ctas > a {
+    width: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
