@@ -43,7 +43,7 @@ const WhatsAppIcon = ({ className = '' }) => (
 
 const heroStats = [
   ['6', 'zones Casablanca'],
-  ['24-72h', 'délais moyens'],
+  ['24h', 'délais maximum'],
   ['COD', 'paiement livraison'],
 ];
 
@@ -118,7 +118,6 @@ const LandingPage = () => {
         console.error(err);
         if (mounted) {
           setRates(foxDeliveryRates);
-          setRatesError('Tarifs API indisponibles. Affichage de la grille Casablanca par defaut.');
         }
       } finally {
         if (mounted) {
