@@ -72,11 +72,11 @@ const services = [
 
 const MoroccoCoverageMap = () => (
   <div className="group relative overflow-hidden rounded-premium border border-slate-200 bg-white p-2 shadow-premium-xl dark:border-slate-800 dark:bg-slate-950">
-    <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
+    <div className="relative aspect-[2/3] overflow-hidden rounded-[6px] bg-slate-950">
       <img
         src={moroccoDeliveryMap}
         alt="Carte de livraison GLADEX DELIVERY au Maroc"
-        className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.025]"
+        className="h-full w-full object-contain object-center transition-transform duration-700 group-hover:scale-[1.015]"
         loading="lazy"
       />
       <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-primary-200/50 dark:ring-white/10" />
