@@ -37,7 +37,7 @@ const WHATSAPP_MESSAGE =
   "Bonjour GLADEX DELIVERY, je souhaite avoir plus d'informations sur vos services de livraison.";
 const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 const EXPRESS_WHATSAPP_MESSAGE =
-  "Bonjour GLADEX DELIVERY, je souhaite commander une livraison express en moins de 2h à Casablanca au tarif de 50 DH.";
+  "Bonjour GLADEX DELIVERY, je souhaite commander une livraison express en moins d'une heure et demie à Casablanca au tarif de 50 DH.";
 const expressWhatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(EXPRESS_WHATSAPP_MESSAGE)}`;
 const supportPhoneHref = `tel:${BRAND.supportPhone.replace(/\s/g, '')}`;
 
@@ -493,7 +493,7 @@ const LandingPage = () => {
               Offre express
             </span>
             <h2 className="mt-4 max-w-3xl text-3xl font-black leading-tight sm:text-4xl">
-              Une urgence ? On vous livre en moins de 2h.
+              Une urgence ? On vous livre en moins d’une heure et demie.
             </h2>
             <p className="mt-4 max-w-2xl text-sm font-medium leading-7 text-slate-300 sm:text-base">
               Pharmacie, documents, petits colis ou commande urgente : profitez d’un service express à Casablanca pour seulement 50 DH.
@@ -510,7 +510,7 @@ const LandingPage = () => {
 
             <div className="grid min-h-[17rem] flex-1 grid-rows-2 sm:min-h-[19rem]">
               <div className="flex flex-col items-center justify-center border-b border-white/20 px-6 py-5 text-center">
-                <p className="text-5xl font-black leading-none sm:text-6xl lg:text-7xl">&lt; 2H</p>
+                <p className="text-5xl font-black leading-none sm:text-6xl lg:text-7xl">&lt; 1H30</p>
                 <p className="mt-2 text-xs font-black uppercase tracking-wider text-blue-100">Livraison express</p>
               </div>
               <div className="flex flex-col items-center justify-center px-6 py-5 text-center">
