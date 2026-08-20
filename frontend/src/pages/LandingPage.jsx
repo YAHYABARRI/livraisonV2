@@ -9,8 +9,10 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  Timer,
   Truck,
   X,
+  Zap,
 } from 'lucide-react';
 import Navbar from '../components/Common/Navbar';
 import BrandLogo from '../components/Common/BrandLogo';
@@ -34,6 +36,10 @@ const WHATSAPP_NUMBER = (BRAND.whatsapp || BRAND.supportPhone).replace(/\D/g, ''
 const WHATSAPP_MESSAGE =
   "Bonjour GLADEX DELIVERY, je souhaite avoir plus d'informations sur vos services de livraison.";
 const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+const EXPRESS_WHATSAPP_MESSAGE =
+  "Bonjour GLADEX DELIVERY, je souhaite commander une livraison express en moins de 2h à Casablanca au tarif de 50 DH.";
+const expressWhatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(EXPRESS_WHATSAPP_MESSAGE)}`;
+const supportPhoneHref = `tel:${BRAND.supportPhone.replace(/\s/g, '')}`;
 
 const WhatsAppIcon = ({ className = '' }) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
@@ -473,6 +479,111 @@ const LandingPage = () => {
         </div>
       </section>
 
+      <section className="border-y border-primary-500/25 bg-slate-950 px-4 py-14 text-white sm:px-6 sm:py-16 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.55, ease: 'easeOut' }}
+          className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[minmax(0,1.12fr)_minmax(22rem,0.88fr)] lg:gap-x-12"
+        >
+          <div className="lg:col-start-1 lg:row-start-1">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary-400/40 bg-primary-500/15 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-primary-200">
+              <Zap size={14} aria-hidden="true" />
+              Offre express
+            </span>
+            <h2 className="mt-4 max-w-3xl text-3xl font-black leading-tight sm:text-4xl">
+              Une urgence ? On vous livre en moins de 2h.
+            </h2>
+            <p className="mt-4 max-w-2xl text-sm font-medium leading-7 text-slate-300 sm:text-base">
+              Pharmacie, documents, petits colis ou commande urgente : profitez d’un service express à Casablanca pour seulement 50 DH.
+            </p>
+          </div>
+
+          <div className="tracking-grid-bg flex flex-col overflow-hidden rounded-premium border border-primary-400/50 bg-primary-600 shadow-premium-xl lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-stretch">
+            <div className="flex items-center justify-between border-b border-white/20 px-5 py-3 sm:px-6">
+              <span className="text-xs font-black uppercase tracking-wider text-blue-100">Express Casablanca</span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-premium border border-white/25 bg-white/15">
+                <Timer size={19} aria-hidden="true" />
+              </span>
+            </div>
+
+            <div className="grid min-h-[17rem] flex-1 grid-rows-2 sm:min-h-[19rem]">
+              <div className="flex flex-col items-center justify-center border-b border-white/20 px-6 py-5 text-center">
+                <p className="text-5xl font-black leading-none sm:text-6xl lg:text-7xl">&lt; 2H</p>
+                <p className="mt-2 text-xs font-black uppercase tracking-wider text-blue-100">Livraison express</p>
+              </div>
+              <div className="flex flex-col items-center justify-center px-6 py-5 text-center">
+                <p className="text-5xl font-black leading-none sm:text-6xl lg:text-7xl">50 DH</p>
+                <p className="mt-2 text-xs font-black uppercase tracking-wider text-blue-100">Tarif spécial</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-start-1 lg:row-start-2">
+            <p className="max-w-2xl text-sm font-semibold leading-7 text-white sm:text-base">
+              Plus besoin d’attendre. Nous récupérons votre commande et la livrons rapidement à l’adresse de votre choix à Casablanca.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <a
+                href={expressWhatsappHref}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-12 items-center justify-center rounded-premium bg-primary-600 px-6 py-3 text-sm font-black text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-500 hover:shadow-xl active:translate-y-0"
+              >
+                Commander maintenant
+              </a>
+              <a
+                href={supportPhoneHref}
+                className="inline-flex min-h-12 items-center justify-center rounded-premium border border-white/20 bg-white/5 px-5 py-3 text-sm font-bold text-white transition-all duration-200 hover:border-white/40 hover:bg-white/10"
+              >
+                Nous contacter
+              </a>
+            </div>
+            <p className="mt-3 text-xs font-semibold text-slate-400">
+              Besoin urgent ? Lancez votre demande en quelques secondes.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3 lg:col-span-2">
+            {[
+              {
+                icon: Zap,
+                title: 'Livraison ultra rapide',
+                text: 'Votre commande prise en charge en priorité.',
+              },
+              {
+                icon: MapPin,
+                title: 'Casablanca',
+                text: 'Un service express pensé pour les besoins urgents en ville.',
+              },
+              {
+                icon: PackageCheck,
+                title: 'Seulement 50 DH',
+                text: 'Un tarif clair, simple et sans mauvaise surprise.',
+              },
+            ].map((benefit) => {
+              const Icon = benefit.icon;
+              return (
+                <div key={benefit.title} className="flex items-start gap-3 rounded-premium border border-white/10 bg-white/5 p-4 transition-colors duration-200 hover:border-primary-400/40 hover:bg-white/8">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-premium bg-primary-500/15 text-primary-300">
+                    <Icon size={19} aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-black text-white">{benefit.title}</h3>
+                    <p className="mt-1 text-xs leading-5 text-slate-400">{benefit.text}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="border-t border-white/10 pt-4 text-xs leading-5 text-slate-500 lg:col-span-2">
+            Offre valable pour les livraisons urgentes éligibles à Casablanca, selon la zone et la disponibilité du service.
+          </p>
+        </motion.div>
+      </section>
+
       <section className="bg-slate-950 px-4 py-20 text-white sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.78fr_1.22fr]">
           <div>
@@ -502,17 +613,38 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 rounded-premium bg-primary-600 p-8 text-white shadow-premium-xl lg:flex-row lg:items-center">
-          <div>
-            <h2 className="text-3xl font-black">Pret a envoyer vos colis ?</h2>
-            <p className="mt-2 max-w-2xl text-sm font-medium text-blue-50">Creez un compte vendeur et commencez a preparer vos expeditions.</p>
+      <section className="bg-white px-4 py-20 dark:bg-slate-950 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="tracking-grid-bg relative mx-auto max-w-6xl overflow-hidden rounded-premium border border-primary-400 bg-primary-600 px-6 py-14 text-center text-white shadow-premium-xl sm:px-10 sm:py-16 lg:px-16"
+        >
+          <div className="relative mx-auto flex max-w-3xl flex-col items-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-premium border border-white/25 bg-white/15 shadow-lg backdrop-blur-sm">
+              <PackageCheck size={28} aria-hidden="true" />
+            </span>
+
+            <p className="mt-6 text-xs font-black uppercase tracking-wider text-blue-100">
+              Votre espace vendeur vous attend
+            </p>
+            <h2 className="mt-3 text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
+              Prêt à envoyer vos colis ?
+            </h2>
+            <p className="mt-4 max-w-2xl text-sm font-medium leading-7 text-blue-50 sm:text-base">
+              Créez votre compte vendeur et préparez votre première expédition en quelques instants.
+            </p>
+
+            <Link
+              to="/register"
+              className="group mt-8 inline-flex min-h-12 items-center justify-center gap-3 rounded-premium bg-white px-7 py-3.5 text-sm font-black text-slate-950 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-xl active:translate-y-0 sm:text-base"
+            >
+              Démarrer maintenant
+              <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
+            </Link>
           </div>
-          <Link to="/register" className="btn-premium-primary bg-white text-slate-950 hover:bg-blue-50">
-            Démarrer
-            <ArrowRight size={16} />
-          </Link>
-        </div>
+        </motion.div>
       </section>
 
       <footer className="border-t border-slate-200 bg-white px-4 py-10 dark:border-slate-800 dark:bg-slate-950 sm:px-6 lg:px-8">
