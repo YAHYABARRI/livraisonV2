@@ -613,32 +613,34 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="bg-white px-4 py-14 dark:bg-slate-950 sm:px-6 sm:py-16 lg:px-8">
+      <section className="bg-white px-4 py-10 dark:bg-slate-950 sm:px-6 sm:py-12 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="tracking-grid-bg relative mx-auto max-w-5xl overflow-hidden rounded-premium border border-primary-400 bg-primary-600 px-6 py-9 text-center text-white shadow-premium-xl sm:px-10 sm:py-11 lg:px-14"
+          className="tracking-grid-bg relative mx-auto max-w-4xl overflow-hidden rounded-premium border border-slate-800 bg-slate-950 px-5 py-7 text-center text-white shadow-premium-xl sm:px-8 sm:py-8"
         >
-          <div className="relative mx-auto flex max-w-3xl flex-col items-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-premium border border-white/25 bg-white/15 shadow-lg backdrop-blur-sm">
-              <PackageCheck size={24} aria-hidden="true" />
-            </span>
+          <div className="relative mx-auto flex max-w-2xl flex-col items-center">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-premium border border-primary-400/40 bg-primary-600 text-white shadow-md">
+                <PackageCheck size={20} aria-hidden="true" />
+              </span>
+              <p className="text-xs font-black uppercase tracking-wider text-primary-300">
+                Votre espace vendeur vous attend
+              </p>
+            </div>
 
-            <p className="mt-4 text-xs font-black uppercase tracking-wider text-blue-100">
-              Votre espace vendeur vous attend
-            </p>
-            <h2 className="mt-2 text-3xl font-black leading-tight sm:text-4xl">
+            <h2 className="mt-4 text-2xl font-black leading-tight sm:text-3xl">
               Prêt à envoyer vos colis ?
             </h2>
-            <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-blue-50 sm:text-base">
+            <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-slate-300">
               Créez votre compte vendeur et préparez votre première expédition en quelques instants.
             </p>
 
             <Link
               to="/register"
-              className="group mt-6 inline-flex min-h-12 items-center justify-center gap-3 rounded-premium bg-white px-6 py-3 text-sm font-black text-slate-950 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-xl active:translate-y-0"
+              className="group mt-5 inline-flex min-h-11 items-center justify-center gap-3 rounded-premium bg-primary-600 px-6 py-2.5 text-sm font-black text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-500 hover:shadow-xl active:translate-y-0"
             >
               Démarrer maintenant
               <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
