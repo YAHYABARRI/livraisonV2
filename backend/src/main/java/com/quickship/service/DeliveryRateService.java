@@ -18,7 +18,7 @@ public class DeliveryRateService {
     private DeliveryRateRepository deliveryRateRepository;
 
     public List<DeliveryRateResponse> getAllRates() {
-        return deliveryRateRepository.findAllByOrderByIdAsc().stream()
+        return deliveryRateRepository.findAllByOrderByIdDesc().stream()
                 .map(this::toResponse)
                 .toList();
     }

@@ -77,7 +77,7 @@ const AdminRates = () => {
         deliveryFee: numericDeliveryFee,
         returnFee: 0,
       });
-      setRates((current) => [...current, createdRate]);
+      setRates((current) => [createdRate, ...current]);
       setCity('');
       setDeliveryFee('16');
       toast.success('Ville ajoutee au tableau des tarifs.');
