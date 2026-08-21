@@ -77,7 +77,7 @@ const AdminRates = () => {
         deliveryFee: numericDeliveryFee,
         returnFee: 0,
       });
-      setRates((current) => [...current, createdRate].sort((a, b) => a.city.localeCompare(b.city)));
+      setRates((current) => [...current, createdRate]);
       setCity('');
       setDeliveryFee('16');
       toast.success('Ville ajoutee au tableau des tarifs.');
@@ -123,8 +123,7 @@ const AdminRates = () => {
         returnFee: rate.returnFee || 0,
       });
       setRates((current) => current
-        .map((item) => (item.id === updatedRate.id ? updatedRate : item))
-        .sort((a, b) => a.city.localeCompare(b.city)));
+        .map((item) => (item.id === updatedRate.id ? updatedRate : item)));
       setEditingId(null);
       setEditCity('');
       setEditDeliveryFee('');

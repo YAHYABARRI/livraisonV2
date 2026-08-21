@@ -13,5 +13,5 @@ public interface DeliveryRateRepository extends JpaRepository<DeliveryRate, Long
 
     Optional<DeliveryRate> findByCityIgnoreCase(String city);
 
-    List<DeliveryRate> findAllByOrderByCityAsc();
+    List<DeliveryRate> findAllByOrderByIdAsc();
 }
