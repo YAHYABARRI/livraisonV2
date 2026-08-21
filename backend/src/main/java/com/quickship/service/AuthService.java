@@ -2,12 +2,14 @@ package com.quickship.service;
 
 import com.quickship.dto.*;
 import com.quickship.entity.*;
+import com.quickship.event.ClientRegisteredEvent;
 import com.quickship.exception.BadRequestException;
 import com.quickship.mapper.UserMapper;
 import com.quickship.repository.RoleRepository;
 import com.quickship.repository.UserRepository;
 import com.quickship.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,6 +41,9 @@ public class AuthService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
@@ -74,6 +79,9 @@ public class AuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
+        if (roleType == RoleType.CLIENT) {
+            eventPublisher.publishEvent(ClientRegisteredEvent.from(savedUser));
+        }
         return userMapper.toResponse(savedUser);
     }
 
