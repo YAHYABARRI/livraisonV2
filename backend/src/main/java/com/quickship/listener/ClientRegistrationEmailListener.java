@@ -23,6 +23,7 @@ public class ClientRegistrationEmailListener {
     public void onClientRegistered(ClientRegisteredEvent event) {
         try {
             emailService.sendNewClientRegistrationNotification(event);
+            LOGGER.info("Notification d'inscription envoyée pour l'utilisateur {}.", event.userId());
         } catch (Exception exception) {
             LOGGER.error(
                     "Impossible d'envoyer la notification d'inscription pour l'utilisateur {}. L'inscription reste enregistrée.",
