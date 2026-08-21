@@ -47,11 +47,6 @@ const WhatsAppIcon = ({ className = '' }) => (
   </svg>
 );
 
-const heroStats = [
-  ['6', 'zones Casablanca'],
-  ['24h', 'délais maximum'],
-  ['COD', 'paiement livraison'],
-];
 
 const services = [
   {
@@ -108,6 +103,11 @@ const LandingPage = () => {
   const [rates, setRates] = useState(foxDeliveryRates);
   const [ratesLoading, setRatesLoading] = useState(true);
   const [ratesError, setRatesError] = useState(null);
+  const heroStats = [
+  [rates.length || foxRatesMeta.uniqueCities, 'zones Casablanca'],
+  ['24h', 'délais maximum'],
+  ['COD', 'paiement livraison'],
+];
 
   useEffect(() => {
     let mounted = true;
