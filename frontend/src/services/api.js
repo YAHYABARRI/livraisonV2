@@ -124,6 +124,10 @@ export const rateService = {
     const response = await api.put(`/admin/rates/${id}`, rateData);
     return response.data;
   },
+  reorder: async (rateIds) => {
+    const response = await api.put('/admin/rates/order', { rateIds });
+    return response.data;
+  },
   delete: async (id) => {
     await api.delete(`/admin/rates/${id}`);
   },

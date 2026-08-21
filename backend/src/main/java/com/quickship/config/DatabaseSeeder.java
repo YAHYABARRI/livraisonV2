@@ -93,6 +93,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         ensureSingleAdminUser();
 
         seedDeliveryRates();
+        normalizeDeliveryRateOrder();
 
         // Backfill legacy parcels on startup
         backfillLegacyParcels();
@@ -307,6 +308,28 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .returnFee(0.0)
                     .build());
         }
+    }
+
+    private void normalizeDeliveryRateOrder() {
+        java.util.List<DeliveryRate> rates = deliveryRateRepository.findAll();
+        if (rates.stream().noneMatch(rate -> rate.getDisplayOrder() == null)) {
+            return;
+        }
+
+        java.util.List<DeliveryRate> orderedRates = new java.util.ArrayList<>();
+        rates.stream()
+                .filter(rate -> rate.getDisplayOrder() != null)
+                .sorted(java.util.Comparator.comparing(DeliveryRate::getDisplayOrder))
+                .forEach(orderedRates::add);
+        rates.stream()
+                .filter(rate -> rate.getDisplayOrder() == null)
+                .sorted(java.util.Comparator.comparing(DeliveryRate::getId).reversed())
+                .forEach(orderedRates::add);
+
+        for (int index = 0; index < orderedRates.size(); index++) {
+            orderedRates.get(index).setDisplayOrder(index + 1);
+        }
+        deliveryRateRepository.saveAll(orderedRates);
     }
 
     private void backfillLegacyParcels() {

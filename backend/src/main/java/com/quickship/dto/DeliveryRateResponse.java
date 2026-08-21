@@ -14,4 +14,5 @@ public class DeliveryRateResponse {
     private String city;
     private Double deliveryFee;
     private Double returnFee;
+    private Integer displayOrder;
 }

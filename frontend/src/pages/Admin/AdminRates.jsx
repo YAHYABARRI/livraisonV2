@@ -1,5 +1,5 @@
 ﻿import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Banknote, MapPin, Pencil, Plus, Save, Search, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Banknote, MapPin, Pencil, Plus, Save, Search, Trash2, X } from 'lucide-react';
 import Layout from '../../components/Common/Layout';
 import EmptyState from '../../components/Common/EmptyState';
 import { SkeletonTable } from '../../components/Common/Skeleton';
@@ -27,6 +27,7 @@ const AdminRates = () => {
   const [saving, setSaving] = useState(false);
   const [updatingId, setUpdatingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [reorderingId, setReorderingId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editCity, setEditCity] = useState('');
   const [editDeliveryFee, setEditDeliveryFee] = useState('');
@@ -77,7 +78,7 @@ const AdminRates = () => {
         deliveryFee: numericDeliveryFee,
         returnFee: 0,
       });
-      setRates((current) => [createdRate, ...current]);
+      setRates((current) => [...current, createdRate]);
       setCity('');
       setDeliveryFee('16');
       toast.success('Ville ajoutee au tableau des tarifs.');
@@ -153,6 +154,29 @@ const AdminRates = () => {
       toast.error(err.response?.data?.message || 'Impossible de supprimer cette ville.');
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleMove = async (rateId, offset) => {
+    const currentIndex = rates.findIndex((rate) => rate.id === rateId);
+    const targetIndex = currentIndex + offset;
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= rates.length) return;
+
+    const previousRates = rates;
+    const nextRates = [...rates];
+    [nextRates[currentIndex], nextRates[targetIndex]] = [nextRates[targetIndex], nextRates[currentIndex]];
+    setRates(nextRates);
+    setReorderingId(rateId);
+
+    try {
+      const orderedRates = await rateService.reorder(nextRates.map((rate) => rate.id));
+      setRates(Array.isArray(orderedRates) ? orderedRates : nextRates);
+    } catch (err) {
+      console.error(err);
+      setRates(previousRates);
+      toast.error(err.response?.data?.message || 'Impossible de modifier l ordre des villes.');
+    } finally {
+      setReorderingId(null);
     }
   };
 
@@ -237,6 +261,7 @@ const AdminRates = () => {
               <table className="data-table">
                 <thead>
                   <tr>
+                    <th className="text-center">Ordre</th>
                     <th>Ville / region</th>
                     <th className="text-right">Prix livraison</th>
                     <th className="text-right">Frais retour</th>
@@ -244,8 +269,35 @@ const AdminRates = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRates.map((rate) => (
+                  {filteredRates.map((rate) => {
+                    const rateIndex = rates.findIndex((item) => item.id === rate.id);
+                    const orderingDisabled = Boolean(searchTerm.trim()) || reorderingId !== null;
+                    return (
                     <tr key={rate.id || rate.city}>
+                      <td>
+                        <div className="flex justify-center gap-1">
+                          <button
+                            className="icon-button h-8 w-8 disabled:opacity-30"
+                            type="button"
+                            title="Monter la ville"
+                            aria-label={`Monter ${rate.city}`}
+                            onClick={() => handleMove(rate.id, -1)}
+                            disabled={orderingDisabled || rateIndex === 0}
+                          >
+                            <ArrowUp size={15} />
+                          </button>
+                          <button
+                            className="icon-button h-8 w-8 disabled:opacity-30"
+                            type="button"
+                            title="Descendre la ville"
+                            aria-label={`Descendre ${rate.city}`}
+                            onClick={() => handleMove(rate.id, 1)}
+                            disabled={orderingDisabled || rateIndex === rates.length - 1}
+                          >
+                            <ArrowDown size={15} />
+                          </button>
+                        </div>
+                      </td>
                       <td>
                         {editingId === rate.id ? (
                           <input
@@ -327,7 +379,8 @@ const AdminRates = () => {
                         )}
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

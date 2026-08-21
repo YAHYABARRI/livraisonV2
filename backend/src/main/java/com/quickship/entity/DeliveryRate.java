@@ -30,6 +30,9 @@ public class DeliveryRate {
     @Builder.Default
     private Double returnFee = 0.0;
 
+    @Column(name = "display_order")
+    private Integer displayOrder;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

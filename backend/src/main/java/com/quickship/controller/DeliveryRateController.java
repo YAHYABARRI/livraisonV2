@@ -1,6 +1,7 @@
 package com.quickship.controller;
 
 import com.quickship.dto.DeliveryRateRequest;
+import com.quickship.dto.DeliveryRateOrderRequest;
 import com.quickship.dto.DeliveryRateResponse;
 import com.quickship.service.DeliveryRateService;
 import jakarta.validation.Valid;
@@ -32,6 +33,13 @@ public class DeliveryRateController {
             @Valid @RequestBody DeliveryRateRequest request
     ) {
         return ResponseEntity.ok(deliveryRateService.updateRate(id, request));
+    }
+
+    @PutMapping("/api/admin/rates/order")
+    public ResponseEntity<List<DeliveryRateResponse>> reorderRates(
+            @Valid @RequestBody DeliveryRateOrderRequest request
+    ) {
+        return ResponseEntity.ok(deliveryRateService.reorderRates(request));
     }
 
     @DeleteMapping("/api/admin/rates/{id}")

@@ -1,6 +1,7 @@
 package com.quickship.service;
 
 import com.quickship.dto.DeliveryRateRequest;
+import com.quickship.dto.DeliveryRateOrderRequest;
 import com.quickship.dto.DeliveryRateResponse;
 import com.quickship.entity.DeliveryRate;
 import com.quickship.exception.BadRequestException;
@@ -8,8 +9,12 @@ import com.quickship.exception.ResourceNotFoundException;
 import com.quickship.repository.DeliveryRateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DeliveryRateService {
@@ -18,7 +23,7 @@ public class DeliveryRateService {
     private DeliveryRateRepository deliveryRateRepository;
 
     public List<DeliveryRateResponse> getAllRates() {
-        return deliveryRateRepository.findAllByOrderByIdDesc().stream()
+        return deliveryRateRepository.findAllByOrderByDisplayOrderAscIdAsc().stream()
                 .map(this::toResponse)
                 .toList();
     }
@@ -33,6 +38,7 @@ public class DeliveryRateService {
                 .city(city)
                 .deliveryFee(request.getDeliveryFee())
                 .returnFee(request.getReturnFee() != null ? request.getReturnFee() : 0.0)
+                .displayOrder(deliveryRateRepository.findMaxDisplayOrder() + 1)
                 .build();
 
         return toResponse(deliveryRateRepository.save(rate));
@@ -62,12 +68,40 @@ public class DeliveryRateService {
         deliveryRateRepository.delete(rate);
     }
 
+    @Transactional
+    public List<DeliveryRateResponse> reorderRates(DeliveryRateOrderRequest request) {
+        List<DeliveryRate> rates = deliveryRateRepository.findAll();
+        List<Long> requestedIds = request.getRateIds();
+        Set<Long> uniqueIds = Set.copyOf(requestedIds);
+
+        if (requestedIds.size() != rates.size() || uniqueIds.size() != requestedIds.size()) {
+            throw new BadRequestException("La liste des villes est incomplete ou contient des doublons.");
+        }
+
+        Map<Long, DeliveryRate> ratesById = new HashMap<>();
+        for (DeliveryRate rate : rates) {
+            ratesById.put(rate.getId(), rate);
+        }
+
+        if (!ratesById.keySet().equals(uniqueIds)) {
+            throw new BadRequestException("La liste des villes contient un tarif inconnu.");
+        }
+
+        for (int index = 0; index < requestedIds.size(); index++) {
+            ratesById.get(requestedIds.get(index)).setDisplayOrder(index + 1);
+        }
+
+        deliveryRateRepository.saveAll(ratesById.values());
+        return getAllRates();
+    }
+
     private DeliveryRateResponse toResponse(DeliveryRate rate) {
         return DeliveryRateResponse.builder()
                 .id(rate.getId())
                 .city(rate.getCity())
                 .deliveryFee(rate.getDeliveryFee())
                 .returnFee(rate.getReturnFee())
+                .displayOrder(rate.getDisplayOrder())
                 .build();
     }
 }
