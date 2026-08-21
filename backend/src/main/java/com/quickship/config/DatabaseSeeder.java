@@ -55,6 +55,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Value("${quickship.admin.phone}")
     private String adminPhone;
 
+    @Value("${quickship.seed-demo-data:false}")
+    private boolean seedDemoData;
+
     @Override
     public void run(String... args) throws Exception {
         // Migrate legacy SQL values before JPA entities fetch them
@@ -83,7 +86,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             seedRoles();
         }
 
-        if (userRepository.count() == 0) {
+        if (seedDemoData && userRepository.count() == 0) {
             seedUsersAndParcels();
         }
 
