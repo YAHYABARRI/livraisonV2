@@ -4,21 +4,6 @@
     include-message: always
 
 spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${GMAIL_ADDRESS:}
-    password: ${GMAIL_APP_PASSWORD:}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
-          starttls:
-            enable: true
-            required: true
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/quickship?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
     username: ${SPRING_DATASOURCE_USERNAME:quickship}
@@ -54,3 +39,7 @@ app:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:}
   notifications:
     registration-recipient: ${REGISTRATION_NOTIFICATION_EMAIL:}
+
+resend:
+  api-key: ${RESEND_API_KEY:}
+  from-email: ${RESEND_FROM_EMAIL:onboarding@resend.dev}
