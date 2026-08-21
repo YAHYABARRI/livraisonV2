@@ -1,8 +1,8 @@
 ﻿export const BRAND = {
   name: 'GLADEX DELIVERY',
-  domain: 'livraision.netlify.app',
-  website: 'https://livraision.netlify.app',
-  whatsapp: '',
+  domain: 'gladexdelivery.com',
+  website: 'https://gladexdelivery.com',
+  whatsapp: '+212 708 807 110',
   supportPhone: '+212 701 212 524',
   description:
     'Plateforme marocaine de livraison e-commerce avec suivi colis, tickets, rapports et tableaux de bord opérationnels.',
